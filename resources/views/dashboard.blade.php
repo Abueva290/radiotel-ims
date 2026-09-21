@@ -1,17 +1,10 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Dashboard') }}
-        </h2>
-    </x-slot>
+@extends('layouts.admin')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    {{ __("You're logged in!") }}
-                </div>
-            </div>
-        </div>
+@section('title', 'Dashboard')
+
+@section('content')
+    <div class="rounded-xl bg-slate-700 text-white px-6 py-5">
+        <p class="text-lg font-semibold">Good day, {{ explode(' ', auth()->user()->name)[0] }}!</p>
+        <p class="text-sm text-slate-300">Here's an overview of Radiotel operations today.</p>
     </div>
-</x-app-layout>
+@endsection
