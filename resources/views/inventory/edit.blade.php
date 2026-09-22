@@ -33,9 +33,9 @@
 
         <label class="block text-sm font-medium mb-1">Type</label>
         <select name="movement_type" class="{{ $input }} mb-3">
-            <option value="in">Stock In (add)</option>
-            <option value="out">Stock Out (deduct)</option>
-            <option value="adjustment">Adjustment (set to counted qty)</option>
+            <option value="in" @selected(old('movement_type') === 'in')>Stock In (add)</option>
+            <option value="out" @selected(old('movement_type') === 'out')>Stock Out (deduct)</option>
+            <option value="adjustment" @selected(old('movement_type') === 'adjustment')>Adjustment (set to counted qty)</option>
         </select>
 
         <label class="block text-sm font-medium mb-1">Quantity</label>
@@ -44,6 +44,7 @@
 
         <label class="block text-sm font-medium mb-1 mt-3">Remarks</label>
         <input type="text" name="remarks" value="{{ old('remarks') }}" placeholder="e.g. Delivery from supplier" class="{{ $input }}">
+        @error('remarks') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
 
         <button class="w-full mt-4 px-4 py-2 rounded-lg bg-slate-700 text-white text-sm hover:bg-slate-800">Record Movement</button>
     </form>
