@@ -11,6 +11,22 @@ class Product extends Model
         'stock_qty', 'reorder_level', 'status',
     ];
 
+        public const CATEGORIES = [
+        'two_way_radio' => 'Two-Way Radio',
+        'antenna'       => 'Antenna',
+        'accessory'     => 'Accessory',
+        'part'          => 'Part',
+    ];
+
+    public function stockStatus(): string
+    {
+        if ($this->stock_qty <= 0) {
+            return 'Out of Stock';
+        }
+
+        return $this->isLowStock() ? 'Low Stock' : 'In Stock';
+    }
+
     protected function casts(): array
     {
         return [

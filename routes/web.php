@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -18,7 +19,12 @@ Route::middleware('auth')->group(function () {
 
     // Staff + Admin
     Route::middleware('role:admin,staff')->group(function () {
-        Route::view('/inventory', 'placeholder', ['title' => 'Inventory Management'])->name('inventory.index');
+        Route::get('/inventory', [ProductController::class, 'index'])->name('inventory.index');
+        Route::get('/inventory/create', [ProductController::class, 'create'])->name('inventory.create');
+        Route::post('/inventory', [ProductController::class, 'store'])->name('inventory.store');
+        Route::get('/inventory/{product}/edit', [ProductController::class, 'edit'])->name('inventory.edit');
+        Route::put('/inventory/{product}', [ProductController::class, 'update'])->name('inventory.update');
+        Route::post('/inventory/{product}/movement', [ProductController::class, 'storeMovement'])->name('inventory.movement');
     });
 
     // Technical Head + Admin
