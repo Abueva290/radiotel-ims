@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReceivableController;
+use App\Http\Controllers\RepairJobController;
 use App\Http\Controllers\SaleController;
 use Illuminate\Support\Facades\Route;
 
@@ -38,7 +39,12 @@ Route::middleware('auth')->group(function () {
 
     // Technical Head + Admin
     Route::middleware('role:admin,technical_head')->group(function () {
-        Route::view('/repairs', 'placeholder', ['title' => 'Repair & Service Management'])->name('repairs.index');
+        Route::get('/repairs', [RepairJobController::class, 'index'])->name('repairs.index');
+        Route::get('/repairs/create', [RepairJobController::class, 'create'])->name('repairs.create');
+        Route::post('/repairs', [RepairJobController::class, 'store'])->name('repairs.store');
+        Route::get('/repairs/{repair}', [RepairJobController::class, 'show'])->name('repairs.show');
+        Route::post('/repairs/{repair}/parts', [RepairJobController::class, 'storePart'])->name('repairs.parts');
+        Route::patch('/repairs/{repair}/status', [RepairJobController::class, 'updateStatus'])->name('repairs.status');
     });
 
     // Admin only

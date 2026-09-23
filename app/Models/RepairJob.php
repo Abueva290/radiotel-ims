@@ -32,6 +32,21 @@ class RepairJob extends Model
         $this->total_amount = $this->service_fee + $this->parts_cost;
         $this->save();
     }
+                public static function nextJobNo(): string
+    {
+        $year = now()->year;
+        $count = static::whereYear('date_received', $year)->count() + 1;
+
+        return sprintf('RS-%d-%04d', $year, $count);
+    }
+
+    public const STATUSES = [
+        'for_assessment' => 'For Assessment',
+        'in_progress'    => 'In Progress',
+        'completed'      => 'Completed',
+        'released'       => 'Released',
+    ];
+
 
     public function customer()
     {
