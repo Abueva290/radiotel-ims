@@ -19,6 +19,11 @@ class ReceivablePayment extends Model
         ];
     }
 
+    public static function nextReceiptNo(): string
+    {
+        return sprintf('REC-%04d', static::count() + 1);
+    }
+
     public function receivable()
     {
         return $this->belongsTo(Receivable::class);

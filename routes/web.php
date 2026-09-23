@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReceivableController;
 use App\Http\Controllers\SaleController;
 use Illuminate\Support\Facades\Route;
 
@@ -18,7 +19,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/sales', [SaleController::class, 'store'])->name('sales.store');
         Route::get('/sales/{sale}', [SaleController::class, 'show'])->name('sales.show');
 
-        Route::view('/receivables', 'placeholder', ['title' => 'Accounts Receivable'])->name('receivables.index');
+        Route::get('/receivables', [ReceivableController::class, 'index'])->name('receivables.index');
+        Route::get('/receivables/{receivable}', [ReceivableController::class, 'show'])->name('receivables.show');
+        Route::post('/receivables/{receivable}/payment', [ReceivableController::class, 'storePayment'])->name('receivables.payment');
+
         Route::view('/payables', 'placeholder', ['title' => 'Accounts Payable'])->name('payables.index');
     });
 
