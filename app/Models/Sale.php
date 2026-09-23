@@ -19,6 +19,20 @@ class Sale extends Model
         ];
     }
 
+    // SI-2026-0088 → next is SI-2026-0089
+    public static function nextInvoiceNo(): string
+    {
+        $year = now()->year;
+        $count = static::whereYear('sale_date', $year)->count() + 1;
+
+        return sprintf('SI-%d-%04d', $year, $count);
+    }
+
+    public static function nextDrNo(): string
+    {
+        return sprintf('DR-%04d', static::count() + 1);
+    }
+
     public function customer()
     {
         return $this->belongsTo(Customer::class);

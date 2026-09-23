@@ -45,7 +45,7 @@
                 @if (in_array($user->role, $item['roles']))
                     <a href="{{ route($item['route']) }}"
                        class="block px-3 py-2 rounded-lg text-sm
-                              {{ request()->routeIs($item['route']) ? 'bg-slate-100 font-semibold text-slate-900' : 'text-slate-600 hover:bg-slate-50' }}">
+                              {{ request()->routeIs(explode('.', $item['route'])[0] . '*') ? 'bg-slate-100 font-semibold text-slate-900' : 'text-slate-600 hover:bg-slate-50' }}">
                         {{ $item['label'] }}
                     </a>
                 @endif
@@ -75,7 +75,24 @@
             <p class="text-sm text-slate-400">Radiotel / <span class="font-semibold text-slate-700">@yield('title')</span></p>
             <p class="text-sm text-slate-400">{{ now()->format('M d, Y') }}</p>
         </header>
+
         <div class="p-8">
+            @if (session('success'))
+                <div class="mb-6 rounded-lg bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-700">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            @if ($errors->any())
+                <div class="mb-6 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+                    <ul class="list-disc list-inside space-y-1">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             @yield('content')
         </div>
     </main>

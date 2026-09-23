@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SaleController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect()->route('login'));
@@ -12,7 +13,11 @@ Route::middleware('auth')->group(function () {
 
     // Secretary + Admin
     Route::middleware('role:admin,secretary')->group(function () {
-        Route::view('/sales', 'placeholder', ['title' => 'Sales Management'])->name('sales.index');
+        Route::get('/sales', [SaleController::class, 'index'])->name('sales.index');
+        Route::get('/sales/create', [SaleController::class, 'create'])->name('sales.create');
+        Route::post('/sales', [SaleController::class, 'store'])->name('sales.store');
+        Route::get('/sales/{sale}', [SaleController::class, 'show'])->name('sales.show');
+
         Route::view('/receivables', 'placeholder', ['title' => 'Accounts Receivable'])->name('receivables.index');
         Route::view('/payables', 'placeholder', ['title' => 'Accounts Payable'])->name('payables.index');
     });
