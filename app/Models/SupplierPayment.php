@@ -19,6 +19,11 @@ class SupplierPayment extends Model
         ];
     }
 
+    public static function nextVoucherNo(): string
+    {
+        return sprintf('PV-%04d', static::count() + 1);
+    }
+
     public function invoice()
     {
         return $this->belongsTo(SupplierInvoice::class, 'supplier_invoice_id');

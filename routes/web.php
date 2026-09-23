@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PayableController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReceivableController;
@@ -24,7 +25,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/receivables/{receivable}', [ReceivableController::class, 'show'])->name('receivables.show');
         Route::post('/receivables/{receivable}/payment', [ReceivableController::class, 'storePayment'])->name('receivables.payment');
 
-        Route::view('/payables', 'placeholder', ['title' => 'Accounts Payable'])->name('payables.index');
+        Route::get('/payables', [PayableController::class, 'index'])->name('payables.index');
+        Route::get('/payables/create', [PayableController::class, 'create'])->name('payables.create');
+        Route::post('/payables', [PayableController::class, 'store'])->name('payables.store');
+        Route::get('/payables/{payable}', [PayableController::class, 'show'])->name('payables.show');
+        Route::post('/payables/{payable}/payment', [PayableController::class, 'storePayment'])->name('payables.payment');
     });
 
     // Staff + Admin
