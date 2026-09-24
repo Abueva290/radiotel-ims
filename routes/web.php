@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PayableController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
@@ -12,7 +13,7 @@ Route::get('/', fn () => redirect()->route('login'));
 
 Route::middleware('auth')->group(function () {
 
-    Route::view('/dashboard', 'dashboard')->name('dashboard');
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Secretary + Admin
     Route::middleware('role:admin,secretary')->group(function () {
