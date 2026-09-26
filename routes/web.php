@@ -1,19 +1,26 @@
 <?php
 
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PasswordChangeController;
 use App\Http\Controllers\PayableController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReceivableController;
 use App\Http\Controllers\RepairJobController;
 use App\Http\Controllers\SaleController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect()->route('login'));
 
 Route::middleware('auth')->group(function () {
 
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Every logged-in user can change their own password
+    Route::get('/change-password', [PasswordChangeController::class, 'edit'])->name('password.change');
+    Route::put('/change-password', [PasswordChangeController::class, 'update'])->name('password.change.store');
 
     // Secretary + Admin
     Route::middleware('role:admin,secretary')->group(function () {
@@ -31,6 +38,13 @@ Route::middleware('auth')->group(function () {
         Route::post('/payables', [PayableController::class, 'store'])->name('payables.store');
         Route::get('/payables/{payable}', [PayableController::class, 'show'])->name('payables.show');
         Route::post('/payables/{payable}/payment', [PayableController::class, 'storePayment'])->name('payables.payment');
+
+        Route::get('/customers', [CustomerController::class, 'index'])->name('customers.index');
+        Route::get('/customers/create', [CustomerController::class, 'create'])->name('customers.create');
+        Route::post('/customers', [CustomerController::class, 'store'])->name('customers.store');
+        Route::get('/customers/{customer}/edit', [CustomerController::class, 'edit'])->name('customers.edit');
+        Route::put('/customers/{customer}', [CustomerController::class, 'update'])->name('customers.update');
+        Route::patch('/customers/{customer}/archive', [CustomerController::class, 'toggleArchive'])->name('customers.archive');
     });
 
     // Staff + Admin
@@ -56,7 +70,14 @@ Route::middleware('auth')->group(function () {
     // Admin only
     Route::middleware('role:admin')->group(function () {
         Route::view('/reports', 'placeholder', ['title' => 'Reports & Analytics'])->name('reports.index');
-        Route::view('/users', 'placeholder', ['title' => 'User Management'])->name('users.index');
+
+        Route::get('/users', [UserController::class, 'index'])->name('users.index');
+        Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
+        Route::post('/users', [UserController::class, 'store'])->name('users.store');
+        Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
+        Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+        Route::put('/users/{user}/password', [UserController::class, 'resetPassword'])->name('users.password');
+        Route::patch('/users/{user}/status', [UserController::class, 'toggleStatus'])->name('users.status');
     });
 
     // Breeze profile routes

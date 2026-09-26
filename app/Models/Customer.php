@@ -6,7 +6,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class Customer extends Model
 {
-    protected $fillable = ['name', 'contact_person', 'phone', 'address'];
+    protected $fillable = ['name', 'contact_person', 'phone', 'address', 'status'];
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
+    }
+
+    public function isArchived(): bool
+    {
+        return $this->status === 'archived';
+    }
 
     public function sales()
     {

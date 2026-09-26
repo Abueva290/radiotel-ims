@@ -19,6 +19,7 @@
     $nav = [
         ['label' => 'Dashboard',        'route' => 'dashboard',         'roles' => ['admin', 'secretary', 'technical_head', 'staff']],
         ['label' => 'Sales',            'route' => 'sales.index',       'roles' => ['admin', 'secretary']],
+        ['label' => 'Customers',        'route' => 'customers.index',   'roles' => ['admin', 'secretary']],
         ['label' => 'Inventory',        'route' => 'inventory.index',   'roles' => ['admin', 'staff']],
         ['label' => 'Repair & Service', 'route' => 'repairs.index',     'roles' => ['admin', 'technical_head']],
         ['label' => 'Receivables',      'route' => 'receivables.index', 'roles' => ['admin', 'secretary']],
@@ -40,16 +41,18 @@
         </div>
 
         <nav class="flex-1 px-3 py-4 space-y-1">
-            <p class="px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Main Menu</p>
-            @foreach ($nav as $item)
-                @if (in_array($user->role, $item['roles']))
-                    <a href="{{ route($item['route']) }}"
-                       class="block px-3 py-2 rounded-lg text-sm
-                              {{ request()->routeIs(explode('.', $item['route'])[0] . '*') ? 'bg-slate-100 font-semibold text-slate-900' : 'text-slate-600 hover:bg-slate-50' }}">
-                        {{ $item['label'] }}
-                    </a>
-                @endif
-            @endforeach
+            @unless ($user->must_change_password)
+                <p class="px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Main Menu</p>
+                @foreach ($nav as $item)
+                    @if (in_array($user->role, $item['roles']))
+                        <a href="{{ route($item['route']) }}"
+                           class="block px-3 py-2 rounded-lg text-sm
+                                  {{ request()->routeIs(explode('.', $item['route'])[0] . '*') ? 'bg-slate-100 font-semibold text-slate-900' : 'text-slate-600 hover:bg-slate-50' }}">
+                            {{ $item['label'] }}
+                        </a>
+                    @endif
+                @endforeach
+            @endunless
         </nav>
 
         <div class="px-4 py-4 border-t border-slate-100">
@@ -62,6 +65,10 @@
                     <p class="text-xs text-slate-400">{{ $roleLabels[$user->role] }}</p>
                 </div>
             </div>
+            <a href="{{ route('password.change') }}"
+               class="block px-3 py-2 mb-2 rounded-lg text-sm {{ request()->routeIs('password.change') ? 'bg-slate-100 font-semibold' : 'text-slate-600 hover:bg-slate-50' }}">
+                Change Password
+            </a>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button class="w-full text-left px-3 py-2 rounded-lg text-sm bg-slate-100 hover:bg-slate-200">Sign Out</button>

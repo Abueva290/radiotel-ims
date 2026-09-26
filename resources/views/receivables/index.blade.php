@@ -63,7 +63,7 @@
                         <span class="px-2 py-1 rounded-full text-xs font-medium {{ $badge[$ar->status] }}">{{ ucfirst($ar->status) }}</span>
                     </td>
                     <td class="px-6 py-3 text-right">
-                        <a href="{{ route('receivables.show', $ar) }}" class="text-slate-600 hover:underline">
+                        <a href="{{ route('receivables.show', $ar) }}" class="{{ $ar->status === 'paid' ? 'btn-action' : 'btn-action-primary' }}">
                             {{ $ar->status === 'paid' ? 'View' : 'Record Payment' }}
                         </a>
                     </td>

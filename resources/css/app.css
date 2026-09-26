@@ -1,3 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+    .btn-action {
+        @apply inline-block whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200;
+    }
+    .btn-action-primary {
+        @apply inline-block whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-700 text-white hover:bg-slate-800;
+    }
+    .btn-action-warning {
+        @apply inline-block whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium bg-amber-50 text-amber-700 hover:bg-amber-100;
+    }
+    .btn-action-success {
+        @apply inline-block whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium bg-green-50 text-green-700 hover:bg-green-100;
+    }
+}

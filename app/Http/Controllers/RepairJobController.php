@@ -10,6 +10,7 @@ use App\Models\RepairJob;
 use App\Models\RepairPartUsed;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class RepairJobController extends Controller
@@ -33,7 +34,7 @@ class RepairJobController extends Controller
     public function create()
     {
         return view('repairs.create', [
-            'customers' => Customer::orderBy('name')->get(),
+            'customers' => Customer::active()->orderBy('name')->get(),
             'jobNo'     => RepairJob::nextJobNo(),
             'fee'       => RepairJob::SERVICE_FEE_PER_UNIT,
         ]);
@@ -42,11 +43,13 @@ class RepairJobController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'customer_id'      => 'required|exists:customers,id',
+            'customer_id'      => ['required', Rule::exists('customers', 'id')->where('status', 'active')],
             'unit_model'       => 'required|string|max:255',
             'units'            => 'required|integer|min:1',
             'date_received'    => 'required|date',
             'assessment_notes' => 'nullable|string|max:1000',
+        ], [
+            'customer_id.exists' => 'The selected customer is archived or does not exist.',
         ]);
 
         $job = RepairJob::create($data + [
@@ -128,11 +131,13 @@ class RepairJobController extends Controller
             'status' => 'required|in:for_assessment,in_progress,completed,released',
         ]);
 
-        DB::transaction(function () use ($repair, $data) {
+        $billed = false;
+
+        DB::transaction(function () use ($repair, $data, &$billed) {
             $repair->update(['status' => $data['status']]);
 
             // Completing the job bills the customer on 30-day terms
-            if ($data['status'] === 'completed' && ! $repair->receivable) {
+            if ($data['status'] === 'completed' && ! $repair->receivable()->exists()) {
                 Receivable::create([
                     'repair_job_id' => $repair->id,
                     'customer_id'   => $repair->customer_id,
@@ -141,13 +146,12 @@ class RepairJobController extends Controller
                     'due_date'      => now()->addDays(30),
                     'status'        => 'unpaid',
                 ]);
+                $billed = true;
             }
         });
 
-        $note = $data['status'] === 'completed' && $repair->receivable
+        return back()->with('success', $billed
             ? 'Job completed and receivable created.'
-            : 'Repair status updated.';
-
-        return back()->with('success', $note);
+            : 'Repair status updated.');
     }
 }

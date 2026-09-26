@@ -12,21 +12,16 @@ class DatabaseSeeder extends Seeder
     {
         $now = now();
 
-        // Users (default password: "password")
-        $users = [
-            ['Edwin Belgado',           'ebelgado@radiotel.ph',     'admin'],
-            ['Mary Jay Emuy',           'mjemuy@radiotel.ph',       'secretary'],
-            ['Victor Villarin',         'vvillarin@radiotel.ph',    'technical_head'],
-            ['Gilbert Viña',            'gvina@radiotel.ph',        'staff'],
-            ['Mark Anthony Edullantes', 'maedullantes@radiotel.ph', 'staff'],
-        ];
-        foreach ($users as [$name, $email, $role]) {
-            DB::table('users')->insert([
-                'name' => $name, 'email' => $email, 'role' => $role,
-                'password' => Hash::make('password'), 'status' => 'active',
-                'created_at' => $now, 'updated_at' => $now,
-            ]);
-        }
+        // Only the admin is seeded. All other accounts are created by the admin.
+        DB::table('users')->insert([
+            'name' => 'Edwin Belgado',
+            'email' => 'ebelgado@radiotel.ph',
+            'role' => 'admin',
+            'password' => Hash::make('password'),
+            'status' => 'active',
+            'must_change_password' => false,
+            'created_at' => $now, 'updated_at' => $now,
+        ]);
 
         // Fixed suppliers (0 days = cash supplier)
         $suppliers = [
@@ -65,7 +60,7 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        // Sample customers
+        // Customers
         $customers = [
             ['DOLE Region XI',            'Ms. Bautista'],
             ['GMA Network Davao Bureau',  'Ms. Flores'],
@@ -76,7 +71,7 @@ class DatabaseSeeder extends Seeder
         ];
         foreach ($customers as [$name, $contact]) {
             DB::table('customers')->insert([
-                'name' => $name, 'contact_person' => $contact,
+                'name' => $name, 'contact_person' => $contact, 'status' => 'active',
                 'created_at' => $now, 'updated_at' => $now,
             ]);
         }

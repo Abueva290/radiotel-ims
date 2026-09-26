@@ -69,7 +69,7 @@
                         </span>
                     </td>
                     <td class="px-4 py-3 text-right">
-                        <a href="{{ route('repairs.show', $job) }}" class="text-slate-600 hover:underline">View</a>
+                        <a href="{{ route('repairs.show', $job) }}" class="btn-action">View</a>
                     </td>
                 </tr>
             @empty

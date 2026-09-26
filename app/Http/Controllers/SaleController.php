@@ -10,6 +10,7 @@ use App\Models\Sale;
 use App\Models\SaleItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class SaleController extends Controller
@@ -34,7 +35,7 @@ class SaleController extends Controller
 
     public function create()
     {
-        $customers = Customer::orderBy('name')->get();
+        $customers = Customer::active()->orderBy('name')->get();
         $products  = Product::where('status', 'active')->orderBy('name')->get();
 
         return view('sales.create', [
@@ -48,7 +49,7 @@ class SaleController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'customer_id'          => 'required|exists:customers,id',
+            'customer_id'          => ['required', Rule::exists('customers', 'id')->where('status', 'active')],
             'sale_date'            => 'required|date',
             'terms_days'           => 'required|integer|min:0|max:120',
             'items'                => 'required|array|min:1',
@@ -56,7 +57,8 @@ class SaleController extends Controller
             'items.*.quantity'     => 'required|integer|min:1',
             'items.*.unit_price'   => 'required|numeric|min:0',
         ], [
-            'items.required' => 'Add at least one product to the sale.',
+            'items.required'     => 'Add at least one product to the sale.',
+            'customer_id.exists' => 'The selected customer is archived or does not exist.',
         ]);
 
         // Combine duplicate rows of the same product, then check stock

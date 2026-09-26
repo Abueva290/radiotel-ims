@@ -79,7 +79,7 @@
                         <span class="px-2 py-1 rounded-full text-xs font-medium {{ $badge[$status] }}">{{ $status }}</span>
                     </td>
                     <td class="px-4 py-3 text-right">
-                        <a href="{{ route('inventory.edit', $product) }}" class="text-slate-600 hover:underline">Edit</a>
+                        <a href="{{ route('inventory.edit', $product) }}" class="btn-action">Edit</a>
                     </td>
                 </tr>
             @empty
