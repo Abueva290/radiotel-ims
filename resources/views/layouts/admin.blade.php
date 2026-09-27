@@ -14,14 +14,15 @@
         'admin' => 'Operational Manager',
         'secretary' => 'Secretary',
         'technical_head' => 'Technical Head',
+        'technician' => 'Technician',
         'staff' => 'Staff',
     ];
     $nav = [
-        ['label' => 'Dashboard',        'route' => 'dashboard',         'roles' => ['admin', 'secretary', 'technical_head', 'staff']],
+        ['label' => 'Dashboard',        'route' => 'dashboard',         'roles' => ['admin', 'secretary', 'technical_head', 'technician', 'staff']],
         ['label' => 'Sales',            'route' => 'sales.index',       'roles' => ['admin', 'secretary']],
         ['label' => 'Customers',        'route' => 'customers.index',   'roles' => ['admin', 'secretary']],
         ['label' => 'Inventory',        'route' => 'inventory.index',   'roles' => ['admin', 'staff']],
-        ['label' => 'Repair & Service', 'route' => 'repairs.index',     'roles' => ['admin', 'technical_head']],
+        ['label' => 'Repair & Service', 'route' => 'repairs.index',     'roles' => ['admin', 'technical_head', 'technician']],
         ['label' => 'Receivables',      'route' => 'receivables.index', 'roles' => ['admin', 'secretary']],
         ['label' => 'Payables',         'route' => 'payables.index',    'roles' => ['admin', 'secretary']],
         ['label' => 'Reports',          'route' => 'reports.index',     'roles' => ['admin']],

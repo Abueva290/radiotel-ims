@@ -11,7 +11,7 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::orderByRaw("FIELD(role, 'admin', 'secretary', 'technical_head', 'staff')")
+        $users = User::orderByRaw("FIELD(role, 'admin', 'secretary', 'technical_head', 'technician', 'staff')")
             ->orderBy('name')
             ->get();
 
@@ -68,7 +68,6 @@ class UserController extends Controller
         return redirect()->route('users.index')->with('success', "{$user->name} updated.");
     }
 
-    // Admin sets a new temporary password (e.g. employee forgot theirs)
     public function resetPassword(Request $request, User $user)
     {
         $data = $request->validate([
@@ -84,7 +83,6 @@ class UserController extends Controller
             "Temporary password set for {$user->name}. They must change it on next login.");
     }
 
-    // Disable instead of delete: keeps who-did-what records intact
     public function toggleStatus(Request $request, User $user)
     {
         if ($user->is($request->user())) {

@@ -14,6 +14,7 @@ class User extends Authenticatable
         'admin'          => 'Admin / Operational Manager',
         'secretary'      => 'Secretary',
         'technical_head' => 'Technical Head',
+        'technician'     => 'Technician',
         'staff'          => 'Staff',
     ];
 

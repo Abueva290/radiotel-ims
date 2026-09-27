@@ -25,9 +25,11 @@
         ['label' => 'Low Stock', 'value' => $stats['low_stock'],
          'note' => 'Below reorder level', 'roles' => ['admin', 'staff']],
         ['label' => 'Open Repairs', 'value' => $stats['open_repairs'],
-         'note' => 'Pending completion', 'roles' => ['admin', 'technical_head']],
+         'note' => 'Pending completion', 'roles' => ['admin', 'technical_head', 'technician']],
     ];
     $visible = array_filter($cards, fn ($c) => in_array($user->role, $c['roles']));
+    $colClass = [1 => 'grid-cols-1', 2 => 'grid-cols-2', 3 => 'grid-cols-3', 4 => 'grid-cols-4', 5 => 'grid-cols-5'][count($visible)] ?? 'grid-cols-3';
+    $showSales = $user->hasRole('admin', 'secretary');
 @endphp
 
 <div class="rounded-xl bg-slate-700 text-white px-6 py-5 mb-6 flex items-center justify-between">
@@ -38,9 +40,6 @@
     <p class="text-sm bg-slate-600 px-3 py-1.5 rounded-lg">{{ now()->format('F d, Y') }}</p>
 </div>
 
-@php
-    $colClass = [1 => 'grid-cols-1', 2 => 'grid-cols-2', 3 => 'grid-cols-3', 4 => 'grid-cols-4', 5 => 'grid-cols-5'][count($visible)] ?? 'grid-cols-3';
-@endphp
 <div class="grid {{ $colClass }} gap-4 mb-6">
     @foreach ($visible as $card)
         <div class="bg-white rounded-xl border border-slate-200 p-5">
@@ -52,7 +51,7 @@
 </div>
 
 <div class="grid grid-cols-3 gap-6">
-    @if ($user->hasRole('admin', 'secretary'))
+    @if ($showSales)
         <div class="col-span-2 bg-white rounded-xl border border-slate-200">
             <h2 class="font-semibold px-6 pt-5 pb-3">Recent Sales</h2>
             <div class="divide-y divide-slate-50">
@@ -74,7 +73,7 @@
         </div>
     @endif
 
-    <div class="space-y-6 {{ $user->hasRole('admin', 'secretary') ? '' : 'col-span-3' }}">
+    <div class="space-y-6 {{ $showSales ? '' : 'col-span-3' }}">
         @if ($user->hasRole('admin', 'staff'))
             <div class="bg-white rounded-xl border border-slate-200">
                 <h2 class="font-semibold px-6 pt-5 pb-3 text-amber-700">Low Stock Alert</h2>
@@ -93,7 +92,7 @@
             </div>
         @endif
 
-        @if ($user->hasRole('admin', 'technical_head'))
+        @if ($user->hasRole('admin', 'technical_head', 'technician'))
             <div class="bg-white rounded-xl border border-slate-200">
                 <h2 class="font-semibold px-6 pt-5 pb-3">Repair Queue</h2>
                 <div class="divide-y divide-slate-50">

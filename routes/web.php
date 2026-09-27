@@ -57,8 +57,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/inventory/{product}/movement', [ProductController::class, 'storeMovement'])->name('inventory.movement');
     });
 
-    // Technical Head + Admin
-    Route::middleware('role:admin,technical_head')->group(function () {
+    // Technical Head + Technician + Admin
+    Route::middleware('role:admin,technical_head,technician')->group(function () {
         Route::get('/repairs', [RepairJobController::class, 'index'])->name('repairs.index');
         Route::get('/repairs/create', [RepairJobController::class, 'create'])->name('repairs.create');
         Route::post('/repairs', [RepairJobController::class, 'store'])->name('repairs.store');

@@ -8,6 +8,7 @@
         'admin'          => 'bg-slate-700 text-white',
         'secretary'      => 'bg-blue-100 text-blue-700',
         'technical_head' => 'bg-purple-100 text-purple-700',
+        'technician'     => 'bg-teal-100 text-teal-700',
         'staff'          => 'bg-slate-100 text-slate-700',
     ];
 @endphp
@@ -21,7 +22,7 @@
        class="px-4 py-2 rounded-lg bg-slate-700 text-white text-sm hover:bg-slate-800">+ Add User</a>
 </div>
 
-<div class="grid grid-cols-4 gap-4 mb-6">
+<div class="grid grid-cols-5 gap-4 mb-6">
     @foreach (\App\Models\User::ROLES as $role => $label)
         <div class="bg-white rounded-xl border border-slate-200 p-5">
             <p class="text-2xl font-semibold">{{ $counts[$role] ?? 0 }}</p>
