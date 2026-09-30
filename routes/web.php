@@ -9,6 +9,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReceivableController;
 use App\Http\Controllers\RepairJobController;
 use App\Http\Controllers\SaleController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -69,7 +70,8 @@ Route::middleware('auth')->group(function () {
 
     // Admin only
     Route::middleware('role:admin')->group(function () {
-        Route::view('/reports', 'placeholder', ['title' => 'Reports & Analytics'])->name('reports.index');
+                Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::get('/reports/{type}', [ReportController::class, 'show'])->name('reports.show');
 
         Route::get('/users', [UserController::class, 'index'])->name('users.index');
         Route::get('/users/create', [UserController::class, 'create'])->name('users.create');

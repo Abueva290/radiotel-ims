@@ -1,0 +1,1 @@
+@include('reports.partials._aging', ['partyLabel' => 'Supplier', 'refLabel' => 'Invoice No.'])

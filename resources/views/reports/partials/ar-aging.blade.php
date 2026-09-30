@@ -1,0 +1,1 @@
+@include('reports.partials._aging', ['partyLabel' => 'Customer', 'refLabel' => 'Reference'])
