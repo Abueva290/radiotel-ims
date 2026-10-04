@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\Receivable;
 use App\Models\Sale;
 use App\Models\SaleItem;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -148,5 +149,32 @@ class SaleController extends Controller
         $sale->load('customer', 'creator', 'items.product', 'receivable.payments');
 
         return view('sales.show', compact('sale'));
+    }
+
+    // Printable Charge Invoice (/sales/{id}/invoice) or Delivery Receipt (/sales/{id}/dr)
+    public function document(Request $request, Sale $sale, string $type)
+    {
+        $sale->load('customer', 'creator', 'items.product', 'receivable');
+
+        $isInvoice = $type === 'invoice';
+
+        $data = [
+            'sale'      => $sale,
+            'type'      => $type,
+            'title'     => $isInvoice ? 'Charge Invoice' : 'Delivery Receipt',
+            'number'    => $isInvoice ? $sale->invoice_no : $sale->dr_no,
+            'termsDays' => $sale->receivable
+                ? (int) round(abs($sale->sale_date->diffInDays($sale->receivable->due_date)))
+                : 0,
+            'isPdf'     => $request->boolean('pdf'),
+        ];
+
+        if ($data['isPdf']) {
+            return Pdf::loadView('sales.document', $data)
+                ->setPaper('a4', 'portrait')
+                ->download($data['number'] . '.pdf');
+        }
+
+        return view('sales.document', $data);
     }
 }

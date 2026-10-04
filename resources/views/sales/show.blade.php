@@ -16,7 +16,17 @@
         <h1 class="text-xl font-semibold">{{ $sale->invoice_no }}</h1>
         <p class="text-sm text-slate-500">{{ $sale->customer->name }} · {{ $sale->sale_date->format('F d, Y') }}</p>
     </div>
-    <a href="{{ route('sales.index') }}" class="px-4 py-2 rounded-lg bg-slate-100 text-sm hover:bg-slate-200">Back to Sales</a>
+    <div class="flex gap-2">
+        <a href="{{ route('sales.document', [$sale, 'invoice']) }}" target="_blank"
+           class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-700 text-white text-sm hover:bg-slate-800">
+            <i class="ti ti-file-invoice text-base"></i> Charge Invoice
+        </a>
+        <a href="{{ route('sales.document', [$sale, 'dr']) }}" target="_blank"
+           class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white border border-slate-200 text-sm hover:bg-slate-50">
+            <i class="ti ti-truck-delivery text-base"></i> Delivery Receipt
+        </a>
+        <a href="{{ route('sales.index') }}" class="px-4 py-2 rounded-lg bg-slate-100 text-sm hover:bg-slate-200">Back to Sales</a>
+    </div>
 </div>
 
 <div class="grid grid-cols-3 gap-6">

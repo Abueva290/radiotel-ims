@@ -29,6 +29,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/sales/create', [SaleController::class, 'create'])->name('sales.create');
         Route::post('/sales', [SaleController::class, 'store'])->name('sales.store');
         Route::get('/sales/{sale}', [SaleController::class, 'show'])->name('sales.show');
+        Route::get('/sales/{sale}/{type}', [SaleController::class, 'document'])
+            ->whereIn('type', ['invoice', 'dr'])
+            ->name('sales.document');
 
         Route::get('/receivables', [ReceivableController::class, 'index'])->name('receivables.index');
         Route::get('/receivables/{receivable}', [ReceivableController::class, 'show'])->name('receivables.show');
