@@ -18,8 +18,9 @@
         <h1 class="text-xl font-semibold">User Management</h1>
         <p class="text-sm text-slate-500">Employee accounts and role-based access</p>
     </div>
-    <a href="{{ route('users.create') }}"
-       class="px-4 py-2 rounded-lg bg-slate-700 text-white text-sm hover:bg-slate-800">+ Add User</a>
+    <button type="button"
+            onclick="window.dispatchEvent(new CustomEvent('open-add-user'))"
+            class="px-4 py-2 rounded-lg bg-slate-700 text-white text-sm hover:bg-slate-800">+ Add User</button>
 </div>
 
 <div class="grid grid-cols-5 gap-4 mb-6">
@@ -65,7 +66,7 @@
                         </div>
                     </td>
                     <td class="px-4 py-3">
-                        <span class="px-2 py-1 rounded text-xs font-medium {{ $roleBadge[$u->role] }}">
+                        <span class="px-2 py-1 rounded text-xs font-medium whitespace-nowrap {{ $roleBadge[$u->role] }}">
                             {{ \App\Models\User::ROLES[$u->role] }}
                         </span>
                     </td>
@@ -100,4 +101,6 @@
 <p class="text-xs text-slate-400 mt-3">
     Disabled users cannot log in. Their past transactions stay on record.
 </p>
+
+@include('users._add-modal')
 @endsection
