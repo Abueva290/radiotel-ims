@@ -5,41 +5,41 @@
     <title>{{ $meta['title'] }} · Radiotel IMS</title>
     <style>
         @page { margin: 28px 32px; }
-        body { font-family: 'DejaVu Sans', Arial, sans-serif; font-size: 11px; color: #1f2430; margin: 0; }
+        body { font-family: 'DejaVu Sans', Arial, sans-serif; font-size: 13.5px; color: #1f2430; margin: 0; }
         .screen { background: #eef0f4; padding: 24px; }
         .sheet { background: #fff; }
         .screen .sheet { max-width: 1100px; margin: 0 auto; padding: 36px 40px; border-radius: 10px; }
         .toolbar { max-width: 1100px; margin: 0 auto 16px; }
-        .toolbar a, .toolbar button { display: inline-block; padding: 8px 14px; margin-right: 6px; border-radius: 8px;
-            font-size: 13px; text-decoration: none; border: 0; cursor: pointer; font-family: inherit; }
+        .toolbar a, .toolbar button { display: inline-block; padding: 9px 16px; margin-right: 6px; border-radius: 8px;
+            font-size: 14px; text-decoration: none; border: 0; cursor: pointer; font-family: inherit; }
         .btn-dark { background: #334155; color: #fff; }
         .btn-light { background: #fff; color: #334155; border: 1px solid #cbd5e1 !important; }
 
-        .head { width: 100%; border-bottom: 2px solid #1f2430; padding-bottom: 10px; margin-bottom: 16px; }
-        .company { font-size: 15px; font-weight: bold; }
+        .head { width: 100%; border-bottom: 2px solid #1f2430; padding-bottom: 12px; margin-bottom: 18px; }
+        .company { font-size: 18px; font-weight: bold; }
         .muted { color: #5a6070; }
-        .title { font-size: 18px; font-weight: bold; text-align: right; }
+        .title { font-size: 22px; font-weight: bold; text-align: right; }
 
-        .cards { width: 100%; border-collapse: separate; border-spacing: 8px 0; margin: 0 -8px 16px; }
-        .cards td { background: #f4f5f8; border: 1px solid #e2e5eb; padding: 10px 12px; width: 25%; }
-        .cards .label { font-size: 10px; color: #5a6070; text-transform: uppercase; }
-        .cards .value { font-size: 16px; font-weight: bold; margin-top: 4px; }
+        .cards { width: 100%; border-collapse: separate; border-spacing: 8px 0; margin: 0 -8px 18px; }
+        .cards td { background: #f4f5f8; border: 1px solid #e2e5eb; padding: 12px 14px; width: 25%; }
+        .cards .label { font-size: 11px; color: #5a6070; text-transform: uppercase; }
+        .cards .value { font-size: 20px; font-weight: bold; margin-top: 4px; }
 
-        h3 { font-size: 12px; margin: 18px 0 6px; text-transform: uppercase; color: #5a6070; }
+        h3 { font-size: 14px; margin: 22px 0 8px; text-transform: uppercase; color: #5a6070; }
         table.data { width: 100%; border-collapse: collapse; }
-        table.data th { background: #eef0f4; color: #5a6070; font-size: 9.5px; text-transform: uppercase;
-            text-align: left; padding: 7px 8px; border-bottom: 1px solid #c9ced8; }
-        table.data td { padding: 6px 8px; border-bottom: 1px solid #e6e8ee; vertical-align: top; }
+        table.data th { background: #eef0f4; color: #5a6070; font-size: 11px; text-transform: uppercase;
+            text-align: left; padding: 9px 10px; border-bottom: 1px solid #c9ced8; }
+        table.data td { padding: 8px 10px; border-bottom: 1px solid #e6e8ee; vertical-align: top; }
         table.data tfoot td { font-weight: bold; border-top: 1.5px solid #1f2430; border-bottom: 0; }
-                .r, table.data th.r, table.data td.r { text-align: right; }
+        .r, table.data th.r, table.data td.r { text-align: right; }
         .c, table.data th.c, table.data td.c { text-align: center; }
-        .tag { padding: 1px 6px; border-radius: 8px; font-size: 9.5px; }
+        .tag { padding: 2px 8px; border-radius: 8px; font-size: 11px; }
         .t-red { background: #fde2e2; color: #b42318; }
         .t-amber { background: #fdf0d5; color: #9a5b00; }
         .t-green { background: #dcf5e7; color: #13764a; }
         .t-gray { background: #eceef2; color: #475067; }
-        .empty { text-align: center; color: #8a90a0; padding: 18px; }
-        .foot { margin-top: 24px; font-size: 9.5px; color: #8a90a0; border-top: 1px solid #e6e8ee; padding-top: 8px; }
+        .empty { text-align: center; color: #8a90a0; padding: 20px; }
+        .foot { margin-top: 26px; font-size: 11px; color: #8a90a0; border-top: 1px solid #e6e8ee; padding-top: 10px; }
 
         @media print { .toolbar { display: none; } .screen { background: #fff; padding: 0; } .screen .sheet { padding: 0; } }
     </style>
@@ -64,7 +64,7 @@
             </td>
             <td class="title">
                 {{ $meta['title'] }}
-                <div class="muted" style="font-size: 11px; font-weight: normal;">
+                <div class="muted" style="font-size: 13px; font-weight: normal;">
                     @if ($meta['dated'])
                         Period: {{ $from->format('M d, Y') }} – {{ $to->format('M d, Y') }}
                     @else

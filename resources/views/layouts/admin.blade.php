@@ -9,6 +9,37 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script>
+        // Apply the saved text size right away (before the page shows)
+        try {
+            const saved = localStorage.getItem('ims-font-size');
+            if (saved) document.documentElement.style.fontSize = saved + 'px';
+        } catch (e) {}
+
+        function fontSizer() {
+            const sizes = [14, 15, 16, 17, 18, 19, 20];
+            let current = 3; // 17px default
+            try {
+                const found = sizes.indexOf(parseInt(localStorage.getItem('ims-font-size')));
+                if (found >= 0) current = found;
+            } catch (e) {}
+
+            return {
+                open: false,
+                sizes,
+                i: current,
+                apply() {
+                    const px = this.sizes[this.i];
+                    document.documentElement.style.fontSize = px + 'px';
+                    try { localStorage.setItem('ims-font-size', px); } catch (e) {}
+                },
+                reset() {
+                    this.i = 3;
+                    this.apply();
+                },
+            };
+        }
+    </script>
 </head>
 <body class="bg-slate-100 text-slate-800 antialiased font-sans">
 @php
@@ -38,6 +69,7 @@
         'Administration' => [
             ['label' => 'Reports',          'icon' => 'chart-bar',        'route' => 'reports.index',     'roles' => ['admin']],
             ['label' => 'User Management',  'icon' => 'user-cog',         'route' => 'users.index',       'roles' => ['admin']],
+            ['label' => 'Audit Trail',      'icon' => 'history',          'route' => 'audit.index',       'roles' => ['admin']],
         ],
     ];
     $initials = collect(explode(' ', $user->name))->map(fn ($w) => $w[0])->take(2)->implode('');
@@ -57,17 +89,21 @@
             </div>
         </div>
 
-        <nav class="flex-1 overflow-y-auto px-3 py-4">
+        <nav class="flex-1 overflow-y-auto px-3 py-3">
             @unless ($user->must_change_password)
                 @foreach ($sections as $title => $items)
-                    @php $visible = array_filter($items, fn ($i) => in_array($user->role, $i['roles'])); @endphp
+                    @php
+                        // Show only menu items for this role whose page exists
+                        $visible = array_filter($items, fn ($i) => in_array($user->role, $i['roles'])
+                            && \Illuminate\Support\Facades\Route::has($i['route']));
+                    @endphp
                     @if (count($visible))
-                        <p class="px-3 pt-4 pb-1.5 text-[11px] font-semibold uppercase tracking-wider text-slate-400 first:pt-0">{{ $title }}</p>
+                        <p class="px-3 pt-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400 first:pt-0">{{ $title }}</p>
                         <div class="space-y-0.5">
                             @foreach ($visible as $item)
                                 @php $active = request()->routeIs(explode('.', $item['route'])[0] . '*'); @endphp
                                 <a href="{{ route($item['route']) }}"
-                                   class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors
+                                   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors
                                           {{ $active ? 'bg-slate-800 text-white font-medium' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
                                     <i class="ti ti-{{ $item['icon'] }} text-lg {{ $active ? 'text-emerald-400' : 'text-slate-400' }}"></i>
                                     {{ $item['label'] }}
@@ -80,13 +116,45 @@
         </nav>
 
         <div class="p-3 border-t border-slate-100">
-            <div class="flex items-center gap-3 px-2 py-2 mb-2">
+            <div class="flex items-center gap-3 px-2 py-2 mb-1">
                 <div class="w-9 h-9 rounded-full bg-slate-700 text-white flex items-center justify-center text-xs font-bold shrink-0">{{ $initials }}</div>
                 <div class="min-w-0">
                     <p class="text-sm font-medium leading-tight truncate">{{ $user->name }}</p>
                     <p class="text-xs text-slate-400 truncate">{{ $roleLabels[$user->role] }}</p>
                 </div>
             </div>
+
+            {{-- Text size setting --}}
+            <div class="relative" x-data="fontSizer()" @click.outside="open = false">
+                <button type="button" @click="open = !open"
+                        class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-slate-100">
+                    <i class="ti ti-typography text-lg text-slate-400"></i>
+                    <span class="flex-1 text-left">Text Size</span>
+                    <span class="text-xs text-slate-400" x-text="sizes[i] + 'px'"></span>
+                </button>
+
+                <div x-show="open" x-transition style="display: none"
+                     class="absolute bottom-full left-0 mb-2 w-72 bg-white rounded-xl border border-slate-200 shadow-lg p-5 z-50">
+                    <p class="text-sm font-medium mb-4">Text size</p>
+                    <div class="flex items-center gap-4">
+                        <span class="text-xs font-semibold text-slate-500">A</span>
+                        <div class="flex-1">
+                            <input type="range" min="0" :max="sizes.length - 1" step="1"
+                                   x-model.number="i" @input="apply()" class="w-full accent-slate-700">
+                            <div class="flex justify-between px-0.5 mt-1">
+                                <template x-for="(s, n) in sizes" :key="n">
+                                    <span class="w-2 h-2 rounded-full" :class="n <= i ? 'bg-slate-700' : 'bg-slate-300'"></span>
+                                </template>
+                            </div>
+                        </div>
+                        <span class="text-2xl font-semibold text-slate-700">A</span>
+                    </div>
+                    <div class="flex justify-end mt-4">
+                        <button type="button" @click="reset()" class="text-xs text-slate-400 hover:text-slate-700">Reset to default</button>
+                    </div>
+                </div>
+            </div>
+
             <a href="{{ route('password.change') }}"
                class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm {{ request()->routeIs('password.change') ? 'bg-slate-100 font-medium text-slate-900' : 'text-slate-600 hover:bg-slate-100' }}">
                 <i class="ti ti-lock text-lg text-slate-400"></i> Change Password
