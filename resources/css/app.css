@@ -3,6 +3,11 @@
 @tailwind utilities;
 
 @layer base {
+    /* Make the whole system bigger (default is 16px) */
+    html {
+        font-size: 17px;
+    }
+
     /* Remove the up/down arrows on number inputs */
     input[type='number']::-webkit-inner-spin-button,
     input[type='number']::-webkit-outer-spin-button {

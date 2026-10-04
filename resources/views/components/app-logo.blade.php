@@ -1,4 +1,4 @@
-<svg {{ $attributes->merge(['class' => 'w-9 h-9']) }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Radiotel IMS">
+﻿<svg {{ $attributes->merge(['class' => 'w-9 h-9']) }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Radiotel IMS">
     <rect width="64" height="64" rx="14" fill="#1e293b"/>
     <g fill="none" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">
         <path d="M13.5 47V27.5H21a5 5 0 0 1 0 10h-7.5M20 37.5 27 47"/>
