@@ -28,7 +28,13 @@ class RepairJobController extends Controller
             'billed'    => RepairJob::sum('total_amount'),
         ];
 
-        return view('repairs.index', compact('jobs', 'stats'));
+        return view('repairs.index', [
+            'jobs'      => $jobs,
+            'stats'     => $stats,
+            'customers' => Customer::active()->orderBy('name')->get(),
+            'jobNo'     => RepairJob::nextJobNo(),
+            'fee'       => RepairJob::SERVICE_FEE_PER_UNIT,
+        ]);
     }
 
     public function create()

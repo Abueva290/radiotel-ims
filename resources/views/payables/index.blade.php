@@ -21,8 +21,9 @@
         <h1 class="text-xl font-semibold">Accounts Payable</h1>
         <p class="text-sm text-slate-500">Supplier invoices and credit terms</p>
     </div>
-    <a href="{{ route('payables.create') }}"
-       class="px-4 py-2 rounded-lg bg-slate-700 text-white text-sm hover:bg-slate-800">+ Record Invoice</a>
+    <button type="button"
+            onclick="window.dispatchEvent(new CustomEvent('open-add-invoice'))"
+            class="px-4 py-2 rounded-lg bg-slate-700 text-white text-sm hover:bg-slate-800">+ Record Invoice</button>
 </div>
 
 <div class="grid grid-cols-3 gap-4 mb-6">
@@ -78,4 +79,6 @@
         </tbody>
     </table>
 </div>
+
+@include('payables._add-modal')
 @endsection

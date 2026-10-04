@@ -30,7 +30,15 @@ class SaleController extends Controller
             'unpaid' => Receivable::whereNotNull('sale_id')->sum('balance'),
         ];
 
-        return view('sales.index', compact('sales', 'totals', 'status'));
+        return view('sales.index', [
+            'sales'     => $sales,
+            'totals'    => $totals,
+            'status'    => $status,
+            'customers' => Customer::active()->orderBy('name')->get(),
+            'products'  => Product::where('status', 'active')->orderBy('name')->get(),
+            'invoiceNo' => Sale::nextInvoiceNo(),
+            'drNo'      => Sale::nextDrNo(),
+        ]);
     }
 
     public function create()

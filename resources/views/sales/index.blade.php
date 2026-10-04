@@ -17,8 +17,9 @@
         <h1 class="text-xl font-semibold">Sales Management</h1>
         <p class="text-sm text-slate-500">Charge invoices and delivery receipts</p>
     </div>
-    <a href="{{ route('sales.create') }}"
-       class="px-4 py-2 rounded-lg bg-slate-700 text-white text-sm hover:bg-slate-800">+ New Sale</a>
+    <button type="button"
+            onclick="window.dispatchEvent(new CustomEvent('open-add-sale'))"
+            class="px-4 py-2 rounded-lg bg-slate-700 text-white text-sm hover:bg-slate-800">+ New Sale</button>
 </div>
 
 <div class="flex gap-2 mb-4">
@@ -77,4 +78,6 @@
     <p class="text-slate-500">Total: <span class="font-semibold text-slate-800">₱{{ number_format($totals['all'], 2) }}</span></p>
     <p class="text-slate-500">Outstanding: <span class="font-semibold text-slate-800">₱{{ number_format($totals['unpaid'], 2) }}</span></p>
 </div>
+
+@include('sales._add-modal')
 @endsection

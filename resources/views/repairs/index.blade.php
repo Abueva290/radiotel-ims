@@ -22,8 +22,9 @@
         <h1 class="text-xl font-semibold">Repair & Service Management</h1>
         <p class="text-sm text-slate-500">Service fee: ₱350 per unit + parts cost</p>
     </div>
-    <a href="{{ route('repairs.create') }}"
-       class="px-4 py-2 rounded-lg bg-slate-700 text-white text-sm hover:bg-slate-800">+ New Repair Job</a>
+    <button type="button"
+            onclick="window.dispatchEvent(new CustomEvent('open-add-repair'))"
+            class="px-4 py-2 rounded-lg bg-slate-700 text-white text-sm hover:bg-slate-800">+ New Repair Job</button>
 </div>
 
 <div class="grid grid-cols-3 gap-4 mb-6">
@@ -64,7 +65,7 @@
                     <td class="px-4 py-3 text-right text-slate-500">₱{{ number_format($job->service_fee, 2) }}</td>
                     <td class="px-4 py-3 text-right font-medium">₱{{ number_format($job->total_amount, 2) }}</td>
                     <td class="px-4 py-3 text-center">
-                        <span class="px-2 py-1 rounded-full text-xs font-medium {{ $badge[$job->status] }}">
+                        <span class="px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap {{ $badge[$job->status] }}">
                             {{ \App\Models\RepairJob::STATUSES[$job->status] }}
                         </span>
                     </td>
@@ -80,4 +81,6 @@
         </tbody>
     </table>
 </div>
+
+@include('repairs._add-modal')
 @endsection

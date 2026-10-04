@@ -22,8 +22,9 @@
         <h1 class="text-xl font-semibold">Inventory Management</h1>
         <p class="text-sm text-slate-500">Stock levels, movements, and low-stock alerts</p>
     </div>
-    <a href="{{ route('inventory.create') }}"
-       class="px-4 py-2 rounded-lg bg-slate-700 text-white text-sm hover:bg-slate-800">+ Add Product</a>
+    <button type="button"
+            onclick="window.dispatchEvent(new CustomEvent('open-add-product'))"
+            class="px-4 py-2 rounded-lg bg-slate-700 text-white text-sm hover:bg-slate-800">+ Add Product</button>
 </div>
 
 <div class="grid grid-cols-4 gap-4 mb-6">
@@ -76,7 +77,7 @@
                     <td class="px-4 py-3 text-right">₱{{ number_format($product->unit_cost, 2) }}</td>
                     <td class="px-4 py-3 text-right font-medium">₱{{ number_format($product->selling_price, 2) }}</td>
                     <td class="px-4 py-3 text-center">
-                        <span class="px-2 py-1 rounded-full text-xs font-medium {{ $badge[$status] }}">{{ $status }}</span>
+                        <span class="px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap {{ $badge[$status] }}">{{ $status }}</span>
                     </td>
                     <td class="px-4 py-3 text-right">
                         <a href="{{ route('inventory.edit', $product) }}" class="btn-action">Edit</a>
@@ -90,4 +91,6 @@
         </tbody>
     </table>
 </div>
+
+@include('inventory._add-modal')
 @endsection

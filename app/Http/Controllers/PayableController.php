@@ -26,7 +26,9 @@ class PayableController extends Controller
                 ->sum('balance'),
         ];
 
-        return view('payables.index', compact('invoices', 'stats'));
+        $suppliers = Supplier::orderBy('name')->get();
+
+        return view('payables.index', compact('invoices', 'stats', 'suppliers'));
     }
 
     public function create()

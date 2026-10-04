@@ -8,8 +8,9 @@
         <h1 class="text-xl font-semibold">Customer Management</h1>
         <p class="text-sm text-slate-500">Customer records used in sales and repair transactions</p>
     </div>
-    <a href="{{ route('customers.create') }}"
-       class="px-4 py-2 rounded-lg bg-slate-700 text-white text-sm hover:bg-slate-800">+ Add Customer</a>
+    <button type="button"
+            onclick="window.dispatchEvent(new CustomEvent('open-add-customer'))"
+            class="px-4 py-2 rounded-lg bg-slate-700 text-white text-sm hover:bg-slate-800">+ Add Customer</button>
 </div>
 
 <div class="flex items-center justify-between mb-4">
@@ -84,4 +85,6 @@
 <p class="text-xs text-slate-400 mt-3">
     Archiving hides a customer from new transactions. Past sales, repairs, and receivables are kept.
 </p>
+
+@include('customers._add-modal')
 @endsection
