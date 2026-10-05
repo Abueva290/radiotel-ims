@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\InventoryMovement;
 use App\Models\Product;
 use App\Models\Receivable;
+use App\Models\ReceivablePayment;
 use App\Models\RepairJob;
 use App\Models\Sale;
 use App\Models\SupplierInvoice;
@@ -28,11 +29,36 @@ class ReportController extends Controller
 
     public function index(Request $request)
     {
-        return view('reports.index', [
-            'reports' => self::REPORTS,
-            'from'    => $request->input('from', now()->startOfMonth()->toDateString()),
-            'to'      => $request->input('to', now()->toDateString()),
+        $request->validate([
+            'from' => 'nullable|date',
+            'to'   => 'nullable|date|after_or_equal:from',
         ]);
+
+        $from = Carbon::parse($request->input('from', now()->startOfMonth()))->startOfDay();
+        $to   = Carbon::parse($request->input('to', now()))->endOfDay();
+        $tab  = array_key_exists($request->input('tab'), self::REPORTS) ? $request->input('tab') : 'sales';
+
+        // Summary across all modules for the selected period
+        $salesInRange = Sale::whereBetween('sale_date', [$from->toDateString(), $to->toDateString()]);
+
+        $overview = [
+            'sales'       => (clone $salesInRange)->sum('total_amount'),
+            'sales_count' => (clone $salesInRange)->count(),
+            'collected'   => ReceivablePayment::whereBetween('payment_date', [$from->toDateString(), $to->toDateString()])->sum('amount_paid'),
+            'receivables' => Receivable::where('status', '!=', 'paid')->sum('balance'),
+            'payables'    => SupplierInvoice::where('status', '!=', 'paid')->sum('balance'),
+            'repairs'     => RepairJob::whereBetween('date_received', [$from->toDateString(), $to->toDateString()])->sum('total_amount'),
+            'low_stock'   => Product::lowStock()->where('status', 'active')->count(),
+        ];
+
+        return view('reports.index', [
+            'reports'  => self::REPORTS,
+            'tab'      => $tab,
+            'meta'     => self::REPORTS[$tab],
+            'from'     => $from,
+            'to'       => $to,
+            'overview' => $overview,
+        ] + $this->{Str::camel($tab)}($from, $to));
     }
 
     public function show(Request $request, string $type)
