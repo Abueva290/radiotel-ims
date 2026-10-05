@@ -21,6 +21,7 @@
             </div>
 
             <form method="POST" action="{{ route('payables.store') }}" class="px-8 py-6"
+                  @open-add-invoice.window="if ($event.detail && $event.detail.supplier) supplier = String($event.detail.supplier)"
                   x-data="{
                       terms: @js($terms),
                       supplier: '{{ old('supplier_id') }}',

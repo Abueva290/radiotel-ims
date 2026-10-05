@@ -5,15 +5,19 @@ namespace App\Http\Controllers;
 use App\Models\Supplier;
 use App\Models\SupplierInvoice;
 use App\Models\SupplierPayment;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class PayableController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $supplierId = $request->integer('supplier') ?: null;
+
         $invoices = SupplierInvoice::with('supplier')
+            ->when($supplierId, fn ($q) => $q->where('supplier_id', $supplierId))
             ->orderByRaw("FIELD(status, 'unpaid', 'partial', 'paid')")
             ->orderBy('due_date')
             ->get();
@@ -26,9 +30,33 @@ class PayableController extends Controller
                 ->sum('balance'),
         ];
 
-        $suppliers = Supplier::orderBy('name')->get();
+        // Per supplier: what is owed, how much is overdue, how many invoices are open, and the next due date
+        $unpaid = fn ($q) => $q->where('status', '!=', 'paid');
 
-        return view('payables.index', compact('invoices', 'stats', 'suppliers'));
+        $suppliers = Supplier::orderBy('name')
+            ->withSum(['invoices as outstanding' => $unpaid], 'balance')
+            ->withSum(['invoices as overdue_amount' => fn ($q) => $unpaid($q)->whereDate('due_date', '<', today())], 'balance')
+            ->withCount(['invoices as open_count' => $unpaid])
+            ->withMin(['invoices as next_due' => $unpaid], 'due_date')
+            ->get();
+
+        // Priority: 0 = overdue, 1 = due within 14 days, 2 = owed but not yet due, 3 = settled
+        foreach ($suppliers as $s) {
+            $s->state_rank = match (true) {
+                (float) $s->overdue_amount > 0                                     => 0,
+                $s->next_due && Carbon::parse($s->next_due)->lte(today()->addDays(14)) => 1,
+                (float) $s->outstanding > 0                                        => 2,
+                default                                                            => 3,
+            };
+        }
+
+        return view('payables.index', [
+            'invoices'      => $invoices,
+            'stats'         => $stats,
+            'suppliers'     => $suppliers, // alphabetical, used by the Record Invoice form
+            'supplierCards' => $suppliers->sortBy([['state_rank', 'asc'], ['outstanding', 'desc']])->values(),
+            'selected'      => $supplierId ? $suppliers->firstWhere('id', $supplierId) : null,
+        ]);
     }
 
     public function create()
