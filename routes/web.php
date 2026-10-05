@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuditTrailController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PasswordChangeController;
@@ -73,7 +74,9 @@ Route::middleware('auth')->group(function () {
 
     // Admin only
     Route::middleware('role:admin')->group(function () {
-                Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::get('/audit-trail', [AuditTrailController::class, 'index'])->name('audit.index');
+
+        Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
         Route::get('/reports/{type}', [ReportController::class, 'show'])->name('reports.show');
 
         Route::get('/users', [UserController::class, 'index'])->name('users.index');
