@@ -20,9 +20,10 @@ class AuditTrailController extends Controller
         'repair_parts_used'   => 'Repair Part',
         'customers'           => 'Customer',
         'users'               => 'User Account',
+        'backups'             => 'Database Backup',
     ];
 
-    public const ACTIONS = ['created', 'updated', 'deleted', 'login', 'logout'];
+    public const ACTIONS = ['created', 'updated', 'deleted', 'login', 'logout', 'backup', 'download'];
 
     public function index(Request $request)
     {

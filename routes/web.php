@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuditTrailController;
+use App\Http\Controllers\BackupController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PasswordChangeController;
@@ -75,6 +76,13 @@ Route::middleware('auth')->group(function () {
     // Admin only
     Route::middleware('role:admin')->group(function () {
         Route::get('/audit-trail', [AuditTrailController::class, 'index'])->name('audit.index');
+
+        // Database backups (spatie/laravel-backup)
+        Route::get('/backups', [BackupController::class, 'index'])->name('backups.index');
+        Route::post('/backups', [BackupController::class, 'store'])->name('backups.store');
+        Route::get('/backups/{file}/download', [BackupController::class, 'download'])
+            ->where('file', '[A-Za-z0-9_\-]+\.zip')
+            ->name('backups.download');
 
         // Supplier payments: Operational Manager only (per the use case diagram)
         Route::post('/payables/{payable}/payment', [PayableController::class, 'storePayment'])->name('payables.payment');

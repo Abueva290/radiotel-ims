@@ -70,6 +70,7 @@
             ['label' => 'Reports',          'icon' => 'chart-bar',        'route' => 'reports.index',     'roles' => ['admin']],
             ['label' => 'User Management',  'icon' => 'user-cog',         'route' => 'users.index',       'roles' => ['admin']],
             ['label' => 'Audit Trail',      'icon' => 'history',          'route' => 'audit.index',       'roles' => ['admin']],
+            ['label' => 'Backups',          'icon' => 'database',         'route' => 'backups.index',     'roles' => ['admin']],
         ],
     ];
     $initials = collect(explode(' ', $user->name))->map(fn ($w) => $w[0])->take(2)->implode('');
