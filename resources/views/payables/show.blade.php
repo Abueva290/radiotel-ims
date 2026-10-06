@@ -81,6 +81,8 @@
                 <p class="text-sm text-slate-500 mt-1">This invoice has been settled.</p>
             </div>
         @else
+            {{-- Only the Operational Manager (admin) records supplier payments --}}
+            @if (auth()->user()->hasRole('admin'))
             <form method="POST" action="{{ route('payables.payment', $invoice) }}"
                   class="bg-white rounded-xl border border-slate-200 p-6">
                 @csrf
@@ -105,6 +107,11 @@
 
                 <button class="w-full mt-4 px-4 py-2 rounded-lg bg-slate-700 text-white text-sm hover:bg-slate-800">Record Payment</button>
             </form>
+            @else
+            <div class="bg-white rounded-xl border border-slate-200 p-6 text-sm text-slate-500">
+                Supplier payments are recorded by the Operational Manager.
+            </div>
+            @endif
         @endif
 
         <div class="bg-white rounded-xl border border-slate-200 p-6 mt-6">

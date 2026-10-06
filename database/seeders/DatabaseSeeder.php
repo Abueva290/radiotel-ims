@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
             'role' => 'admin',
             'password' => Hash::make('password'),
             'status' => 'active',
-            'must_change_password' => false,
+            'must_change_password' => true,
             'created_at' => $now, 'updated_at' => $now,
         ]);
 

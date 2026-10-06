@@ -38,11 +38,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/receivables/{receivable}', [ReceivableController::class, 'show'])->name('receivables.show');
         Route::post('/receivables/{receivable}/payment', [ReceivableController::class, 'storePayment'])->name('receivables.payment');
 
+        // Secretary records supplier invoices; paying them is Admin only (see below)
         Route::get('/payables', [PayableController::class, 'index'])->name('payables.index');
         Route::get('/payables/create', [PayableController::class, 'create'])->name('payables.create');
         Route::post('/payables', [PayableController::class, 'store'])->name('payables.store');
         Route::get('/payables/{payable}', [PayableController::class, 'show'])->name('payables.show');
-        Route::post('/payables/{payable}/payment', [PayableController::class, 'storePayment'])->name('payables.payment');
 
         Route::get('/customers', [CustomerController::class, 'index'])->name('customers.index');
         Route::get('/customers/create', [CustomerController::class, 'create'])->name('customers.create');
@@ -75,6 +75,9 @@ Route::middleware('auth')->group(function () {
     // Admin only
     Route::middleware('role:admin')->group(function () {
         Route::get('/audit-trail', [AuditTrailController::class, 'index'])->name('audit.index');
+
+        // Supplier payments: Operational Manager only (per the use case diagram)
+        Route::post('/payables/{payable}/payment', [PayableController::class, 'storePayment'])->name('payables.payment');
 
         Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
         Route::get('/reports/{type}', [ReportController::class, 'show'])->name('reports.show');
