@@ -18,7 +18,8 @@
         'repair_jobs'       => fn ($id) => route('repairs.show', $id),
         'supplier_invoices' => fn ($id) => route('payables.show', $id),
         'products'          => fn ($id) => route('inventory.edit', $id),
-       'suppliers'         => fn ($id) => route('suppliers.edit', $id),
+        'customers'         => fn ($id) => route('customers.edit', $id),
+        'suppliers'         => fn ($id) => route('suppliers.edit', $id),
         'users'             => fn ($id) => route('users.edit', $id),
     ];
     $hasFilters = collect($filters)->filter()->isNotEmpty();
