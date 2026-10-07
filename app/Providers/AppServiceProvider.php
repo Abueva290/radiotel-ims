@@ -10,6 +10,7 @@ use App\Models\ReceivablePayment;
 use App\Models\RepairJob;
 use App\Models\RepairPartUsed;
 use App\Models\Sale;
+use App\Models\Supplier;
 use App\Models\SupplierInvoice;
 use App\Models\SupplierPayment;
 use App\Models\User;
@@ -34,6 +35,7 @@ class AppServiceProvider extends ServiceProvider
         RepairJob::class,
         RepairPartUsed::class,
         Customer::class,
+        Supplier::class,
         User::class,
     ];
 

@@ -49,7 +49,7 @@
                             <label class="block text-sm font-medium mb-1.5">Supplier</label>
                             <select name="supplier_id" x-model="supplier" class="{{ $input }}">
                                 <option value="">Select supplier...</option>
-                                @foreach ($suppliers as $supplier)
+                                @foreach ($suppliers->where('status', 'active') as $supplier)
                                     <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
                                 @endforeach
                             </select>

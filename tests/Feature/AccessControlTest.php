@@ -60,7 +60,7 @@ class AccessControlTest extends TestCase
     {
         $secretary = $this->userWithRole('secretary');
 
-        foreach (['/sales', '/customers', '/receivables', '/payables'] as $url) {
+        foreach (['/sales', '/customers', '/suppliers', '/receivables', '/payables'] as $url) {
             $this->actingAs($secretary)->get($url)->assertOk();
         }
 
@@ -75,7 +75,7 @@ class AccessControlTest extends TestCase
 
         $this->actingAs($staff)->get('/inventory')->assertOk();
 
-        foreach (['/sales', '/repairs', '/payables'] as $url) {
+        foreach (['/sales', '/suppliers', '/repairs', '/payables'] as $url) {
             $this->actingAs($staff)->get($url)->assertForbidden();
         }
     }

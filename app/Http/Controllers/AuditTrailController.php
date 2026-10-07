@@ -19,6 +19,7 @@ class AuditTrailController extends Controller
         'repair_jobs'         => 'Repair Job',
         'repair_parts_used'   => 'Repair Part',
         'customers'           => 'Customer',
+        'suppliers'           => 'Supplier',
         'users'               => 'User Account',
         'backups'             => 'Database Backup',
     ];

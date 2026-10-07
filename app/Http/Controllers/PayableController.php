@@ -69,7 +69,7 @@ class PayableController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'supplier_id'  => 'required|exists:suppliers,id',
+            'supplier_id'  => 'required|exists:suppliers,id,status,active',
             'invoice_no'   => 'required|string|max:100',
             'invoice_date' => 'required|date',
             'amount'       => 'required|numeric|min:0.01',
