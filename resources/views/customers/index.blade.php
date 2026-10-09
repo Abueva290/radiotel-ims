@@ -13,7 +13,7 @@
             class="px-4 py-2 rounded-lg bg-slate-700 text-white text-sm hover:bg-slate-800">+ Add Customer</button>
 </div>
 
-<div class="flex items-center justify-between mb-4">
+<div class="flex flex-wrap items-center justify-between gap-3 mb-4">
     <div class="flex gap-2">
         <a href="{{ route('customers.index') }}"
            class="px-3 py-1.5 rounded-lg text-sm {{ ! $showArchived ? 'bg-slate-700 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50' }}">
@@ -25,10 +25,10 @@
         </a>
     </div>
 
-    <form method="GET">
+    <form method="GET" class="w-full sm:w-auto">
         @if ($showArchived)<input type="hidden" name="archived" value="1">@endif
         <input type="text" name="search" value="{{ $search }}" placeholder="Search customer..."
-               class="w-64 rounded-lg border-slate-300 text-sm focus:border-slate-500 focus:ring-slate-500">
+               class="w-full sm:w-64 rounded-lg border-slate-300 text-sm focus:border-slate-500 focus:ring-slate-500">
     </form>
 </div>
 

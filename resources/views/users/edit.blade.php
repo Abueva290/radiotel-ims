@@ -13,15 +13,15 @@
     @endif
 </p>
 
-<div class="grid grid-cols-3 gap-6">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     <form method="POST" action="{{ route('users.update', $user) }}"
-          class="col-span-2 bg-white rounded-xl border border-slate-200 p-6">
+          class="lg:col-span-2 bg-white rounded-xl border border-slate-200 p-6">
         @csrf
         @method('PUT')
         <h2 class="font-semibold mb-4">Account Details</h2>
 
-        <div class="grid grid-cols-2 gap-4">
-            <div class="col-span-2">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="sm:col-span-2">
                 <label class="block text-sm font-medium mb-1">Full Name</label>
                 <input type="text" name="name" value="{{ old('name', $user->name) }}" class="{{ $input }}">
                 @error('name') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror

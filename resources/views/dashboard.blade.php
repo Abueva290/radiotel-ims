@@ -28,16 +28,17 @@
          'note' => 'Pending completion', 'roles' => ['admin', 'technical_head', 'technician']],
     ];
     $visible = array_filter($cards, fn ($c) => in_array($user->role, $c['roles']));
-    $colClass = [1 => 'grid-cols-1', 2 => 'grid-cols-2', 3 => 'grid-cols-3', 4 => 'grid-cols-4', 5 => 'grid-cols-5'][count($visible)] ?? 'grid-cols-3';
+    // Fewer columns on small screens so the cards don't get squeezed
+    $colClass = [1 => 'grid-cols-1', 2 => 'grid-cols-1 sm:grid-cols-2', 3 => 'grid-cols-1 sm:grid-cols-3', 4 => 'grid-cols-2 xl:grid-cols-4', 5 => 'grid-cols-2 md:grid-cols-3 xl:grid-cols-5'][count($visible)] ?? 'grid-cols-1 sm:grid-cols-3';
     $showSales = $user->hasRole('admin', 'secretary');
 @endphp
 
-<div class="rounded-xl bg-slate-700 text-white px-6 py-5 mb-6 flex items-center justify-between">
+<div class="rounded-xl bg-slate-700 text-white px-5 sm:px-6 py-5 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
     <div>
         <p class="text-lg font-semibold">Good day, {{ explode(' ', $user->name)[0] }}!</p>
         <p class="text-sm text-slate-300">Here's an overview of Radiotel operations today.</p>
     </div>
-    <p class="text-sm bg-slate-600 px-3 py-1.5 rounded-lg">{{ now()->format('F d, Y') }}</p>
+    <p class="self-start sm:self-auto text-sm bg-slate-600 px-3 py-1.5 rounded-lg">{{ now()->format('F d, Y') }}</p>
 </div>
 
 <div class="grid {{ $colClass }} gap-4 mb-6">
@@ -50,9 +51,9 @@
     @endforeach
 </div>
 
-<div class="grid grid-cols-3 gap-6">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     @if ($showSales)
-        <div class="col-span-2 bg-white rounded-xl border border-slate-200">
+        <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200">
             <h2 class="font-semibold px-6 pt-5 pb-3">Recent Sales</h2>
             <div class="divide-y divide-slate-50">
                 @forelse ($recentSales as $sale)
@@ -73,7 +74,7 @@
         </div>
     @endif
 
-    <div class="space-y-6 {{ $showSales ? '' : 'col-span-3' }}">
+    <div class="space-y-6 {{ $showSales ? '' : 'lg:col-span-3' }}">
         @if ($user->hasRole('admin', 'staff'))
             <div class="bg-white rounded-xl border border-slate-200">
                 <h2 class="font-semibold px-6 pt-5 pb-3 text-amber-700">Low Stock Alert</h2>

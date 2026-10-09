@@ -21,7 +21,7 @@
     <p class="text-sm text-slate-500">Customer balances and collections</p>
 </div>
 
-<div class="grid grid-cols-3 gap-4 mb-6">
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
     @foreach ($cards as [$label, $value, $note])
         <div class="bg-white rounded-xl border border-slate-200 p-5">
             <p class="text-xs text-slate-500">{{ $label }}</p>

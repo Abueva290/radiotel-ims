@@ -14,7 +14,7 @@
     $locked = in_array($job->status, ['completed', 'released']);
 @endphp
 
-<div class="flex items-start justify-between mb-6">
+<div class="flex flex-wrap items-start justify-between gap-4 mb-6">
     <div>
         <h1 class="text-xl font-semibold">{{ $job->job_no }}</h1>
         <p class="text-sm text-slate-500">
@@ -24,8 +24,8 @@
     <a href="{{ route('repairs.index') }}" class="px-4 py-2 rounded-lg bg-slate-100 text-sm hover:bg-slate-200">Back</a>
 </div>
 
-<div class="grid grid-cols-3 gap-6">
-    <div class="col-span-2 space-y-6">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="lg:col-span-2 space-y-6">
         {{-- Charge breakdown --}}
         <div class="bg-white rounded-xl border border-slate-200 p-6">
             <h2 class="font-semibold mb-4">Charge Computation</h2>

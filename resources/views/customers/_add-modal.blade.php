@@ -5,47 +5,47 @@
      @keydown.escape.window="open = false">
 
     <div x-show="open" style="display: none"
-         class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4"
+         class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-2 sm:p-4"
          @click.self="open = false">
 
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
 
             {{-- Header --}}
-            <div class="flex items-center justify-between px-8 py-5 border-b border-slate-100">
+            <div class="flex items-center justify-between px-5 sm:px-8 py-5 border-b border-slate-100">
                 <h2 class="text-lg font-semibold">Add Customer</h2>
                 <button type="button" @click="open = false"
                         class="w-9 h-9 rounded-full border border-slate-200 text-slate-500 hover:bg-slate-50">✕</button>
             </div>
 
-            <form method="POST" action="{{ route('customers.store') }}" class="px-8 py-6">
+            <form method="POST" action="{{ route('customers.store') }}" class="px-4 sm:px-8 py-6">
                 @csrf
                 <input type="hidden" name="_form" value="add-customer">
 
-                <div class="border border-slate-200 rounded-xl p-6">
+                <div class="border border-slate-200 rounded-xl p-4 sm:p-6">
                     <h3 class="font-semibold text-[15px]">Customer Information</h3>
                     <p class="text-xs text-slate-400 mb-5">Used in sales and repair transactions.</p>
 
-                    <div class="grid grid-cols-2 gap-5">
-                        <div class="col-span-2">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div class="sm:col-span-2">
                             <label class="block text-sm font-medium mb-1.5">Customer Name</label>
                             <input type="text" name="name" value="{{ old('name') }}"
                                    placeholder="e.g. Davao City Police Office" class="{{ $input }}">
                             @error('name') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
                         </div>
 
-                        <div class="col-span-2 md:col-span-1">
+                        <div class="min-w-0">
                             <label class="block text-sm font-medium mb-1.5">Contact Person</label>
                             <input type="text" name="contact_person" value="{{ old('contact_person') }}" class="{{ $input }}">
                             @error('contact_person') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
                         </div>
 
-                        <div class="col-span-2 md:col-span-1">
+                        <div class="min-w-0">
                             <label class="block text-sm font-medium mb-1.5">Phone</label>
                             <input type="text" name="phone" value="{{ old('phone') }}" class="{{ $input }}">
                             @error('phone') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
                         </div>
 
-                        <div class="col-span-2">
+                        <div class="sm:col-span-2">
                             <label class="block text-sm font-medium mb-1.5">Address</label>
                             <input type="text" name="address" value="{{ old('address') }}" class="{{ $input }}">
                             @error('address') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror

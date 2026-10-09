@@ -15,7 +15,7 @@
             class="px-4 py-2 rounded-lg bg-slate-700 text-white text-sm hover:bg-slate-800">+ Add Supplier</button>
 </div>
 
-<div class="flex items-center justify-between mb-4">
+<div class="flex flex-wrap items-center justify-between gap-3 mb-4">
     <div class="flex gap-2">
         <a href="{{ route('suppliers.index') }}"
            class="px-3 py-1.5 rounded-lg text-sm {{ ! $showArchived ? 'bg-slate-700 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50' }}">
@@ -27,10 +27,10 @@
         </a>
     </div>
 
-    <form method="GET">
+    <form method="GET" class="w-full sm:w-auto">
         @if ($showArchived)<input type="hidden" name="archived" value="1">@endif
         <input type="text" name="search" value="{{ $search }}" placeholder="Search supplier..."
-               class="w-64 rounded-lg border-slate-300 text-sm focus:border-slate-500 focus:ring-slate-500">
+               class="w-full sm:w-64 rounded-lg border-slate-300 text-sm focus:border-slate-500 focus:ring-slate-500">
     </form>
 </div>
 
@@ -103,45 +103,45 @@
      @keydown.escape.window="open = false">
 
     <div x-show="open" style="display: none"
-         class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4"
+         class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-2 sm:p-4"
          @click.self="open = false">
 
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div class="flex items-center justify-between px-8 py-5 border-b border-slate-100">
+            <div class="flex items-center justify-between px-5 sm:px-8 py-5 border-b border-slate-100">
                 <h2 class="text-lg font-semibold">Add Supplier</h2>
                 <button type="button" @click="open = false"
                         class="w-9 h-9 rounded-full border border-slate-200 text-slate-500 hover:bg-slate-50">✕</button>
             </div>
 
-            <form method="POST" action="{{ route('suppliers.store') }}" class="px-8 py-6">
+            <form method="POST" action="{{ route('suppliers.store') }}" class="px-4 sm:px-8 py-6">
                 @csrf
                 <input type="hidden" name="_form" value="add-supplier">
 
-                <div class="border border-slate-200 rounded-xl p-6">
+                <div class="border border-slate-200 rounded-xl p-4 sm:p-6">
                     <h3 class="font-semibold text-[15px]">Supplier Information</h3>
                     <p class="text-xs text-slate-400 mb-5">Used when recording supplier invoices in Payables.</p>
 
-                    <div class="grid grid-cols-2 gap-5">
-                        <div class="col-span-2">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div class="sm:col-span-2">
                             <label class="block text-sm font-medium mb-1.5">Supplier Name</label>
                             <input type="text" name="name" value="{{ old('name') }}"
                                    placeholder="e.g. Motorola Solutions PH" class="{{ $input }}">
                             @error('name') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
                         </div>
 
-                        <div class="col-span-2 md:col-span-1">
+                        <div class="min-w-0">
                             <label class="block text-sm font-medium mb-1.5">Contact Person</label>
                             <input type="text" name="contact_person" value="{{ old('contact_person') }}" class="{{ $input }}">
                             @error('contact_person') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
                         </div>
 
-                        <div class="col-span-2 md:col-span-1">
+                        <div class="min-w-0">
                             <label class="block text-sm font-medium mb-1.5">Phone</label>
                             <input type="text" name="phone" value="{{ old('phone') }}" class="{{ $input }}">
                             @error('phone') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
                         </div>
 
-                        <div class="col-span-2 md:col-span-1">
+                        <div class="min-w-0">
                             <label class="block text-sm font-medium mb-1.5">Credit Terms (days)</label>
                             <input type="number" name="credit_terms_days" value="{{ old('credit_terms_days', 60) }}"
                                    min="0" max="365" class="{{ $input }}">

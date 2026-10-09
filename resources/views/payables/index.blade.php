@@ -37,7 +37,7 @@
             class="px-4 py-2 rounded-lg bg-slate-700 text-white text-sm hover:bg-slate-800">+ Record Invoice</button>
 </div>
 
-<div class="grid grid-cols-3 gap-4 mb-8">
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
     @foreach ($cards as [$label, $value])
         <div class="bg-white rounded-xl border border-slate-200 p-5">
             <p class="text-xs text-slate-500">{{ $label }}</p>
@@ -47,7 +47,7 @@
 </div>
 
 {{-- Suppliers with a balance: one card each, most urgent first --}}
-<div class="flex items-baseline justify-between mb-3">
+<div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 mb-3">
     <h2 class="text-base font-semibold">Suppliers with a balance</h2>
     <p class="text-sm text-slate-500">Click a card to see that supplier's invoices</p>
 </div>
@@ -111,7 +111,7 @@
             <div class="flex items-center gap-4 px-5 py-3 border-b border-slate-50 last:border-b-0 text-sm {{ $isSelected ? 'bg-slate-50' : '' }}">
                 <a href="{{ $filterUrl($supplier) }}" class="flex-1 min-w-0 truncate font-medium hover:underline">{{ $supplier->name }}</a>
                 <span class="hidden md:block w-40 truncate text-slate-500">{{ $supplier->contact_person }}</span>
-                <span class="w-28 text-slate-500">{{ $supplier->credit_terms_days > 0 ? $supplier->credit_terms_days . '-day terms' : 'Cash' }}</span>
+                <span class="hidden sm:block w-28 text-slate-500">{{ $supplier->credit_terms_days > 0 ? $supplier->credit_terms_days . '-day terms' : 'Cash' }}</span>
                 <button type="button"
                         onclick="window.dispatchEvent(new CustomEvent('open-add-invoice', { detail: { supplier: {{ $supplier->id }} } }))"
                         class="text-slate-600 underline hover:text-slate-900 whitespace-nowrap">
@@ -123,7 +123,7 @@
 @endif
 
 {{-- Invoices --}}
-<div class="flex items-baseline justify-between mb-3">
+<div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 mb-3">
     <h2 class="text-base font-semibold">{{ $selected ? 'Invoices from ' . $selected->name : 'All supplier invoices' }}</h2>
     @if ($selected)
         <a href="{{ route('payables.index') }}" class="text-sm text-slate-600 underline hover:text-slate-900">Show all suppliers</a>

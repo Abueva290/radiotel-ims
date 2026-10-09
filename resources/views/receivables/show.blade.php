@@ -13,7 +13,7 @@
     $reference = $receivable->sale?->invoice_no ?? $receivable->repairJob?->job_no ?? '—';
 @endphp
 
-<div class="flex items-start justify-between mb-6">
+<div class="flex flex-wrap items-start justify-between gap-4 mb-6">
     <div>
         <h1 class="text-xl font-semibold">{{ $receivable->customer->name }}</h1>
         <p class="text-sm text-slate-500">{{ $reference }} · Due {{ $receivable->due_date->format('F d, Y') }}</p>
@@ -21,10 +21,10 @@
     <a href="{{ route('receivables.index') }}" class="px-4 py-2 rounded-lg bg-slate-100 text-sm hover:bg-slate-200">Back</a>
 </div>
 
-<div class="grid grid-cols-3 gap-6">
-    <div class="col-span-2 space-y-6">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="lg:col-span-2 space-y-6">
         <div class="bg-white rounded-xl border border-slate-200 p-6">
-            <div class="grid grid-cols-3 gap-4 text-center">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
                 <div>
                     <p class="text-xs text-slate-500">Amount Due</p>
                     <p class="text-xl font-semibold mt-1">₱{{ number_format($receivable->amount_due, 2) }}</p>

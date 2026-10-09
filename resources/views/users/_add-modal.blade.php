@@ -5,40 +5,40 @@
      @keydown.escape.window="open = false">
 
     <div x-show="open" style="display: none"
-         class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4"
+         class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-2 sm:p-4"
          @click.self="open = false">
 
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
 
             {{-- Header --}}
-            <div class="flex items-center justify-between px-8 py-5 border-b border-slate-100">
+            <div class="flex items-center justify-between px-5 sm:px-8 py-5 border-b border-slate-100">
                 <h2 class="text-lg font-semibold">Add User</h2>
                 <button type="button" @click="open = false"
                         class="w-9 h-9 rounded-full border border-slate-200 text-slate-500 hover:bg-slate-50">✕</button>
             </div>
 
-            <form method="POST" action="{{ route('users.store') }}" class="px-8 py-6">
+            <form method="POST" action="{{ route('users.store') }}" class="px-4 sm:px-8 py-6">
                 @csrf
                 <input type="hidden" name="_form" value="add-user">
 
-                <div class="border border-slate-200 rounded-xl p-6">
+                <div class="border border-slate-200 rounded-xl p-4 sm:p-6">
                     <h3 class="font-semibold text-[15px]">User Information</h3>
                     <p class="text-xs text-slate-400 mb-5">The employee will be asked to change the password on first login.</p>
 
-                    <div class="grid grid-cols-2 gap-5">
-                        <div class="col-span-2 md:col-span-1">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div class="min-w-0">
                             <label class="block text-sm font-medium mb-1.5">Full Name</label>
                             <input type="text" name="name" value="{{ old('name') }}" class="{{ $input }}">
                             @error('name') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
                         </div>
 
-                        <div class="col-span-2 md:col-span-1">
+                        <div class="min-w-0">
                             <label class="block text-sm font-medium mb-1.5">Email Address</label>
                             <input type="email" name="email" value="{{ old('email') }}" placeholder="name@radiotel.ph" class="{{ $input }}">
                             @error('email') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
                         </div>
 
-                        <div class="col-span-2">
+                        <div class="sm:col-span-2">
                             <label class="block text-sm font-medium mb-1.5">Role</label>
                             <select name="role" class="{{ $input }}">
                                 @foreach (\App\Models\User::ROLES as $value => $label)
@@ -48,7 +48,7 @@
                             @error('role') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
                         </div>
 
-                        <div class="col-span-2">
+                        <div class="sm:col-span-2">
                             <label class="block text-sm font-medium mb-1.5">Temporary Password</label>
                             <div class="flex gap-3" x-data="{ pw: @js(old('password', '')) }">
                                 <input type="text" name="password" x-model="pw" class="{{ $input }}">

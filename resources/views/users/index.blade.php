@@ -23,7 +23,7 @@
             class="px-4 py-2 rounded-lg bg-slate-700 text-white text-sm hover:bg-slate-800">+ Add User</button>
 </div>
 
-<div class="grid grid-cols-5 gap-4 mb-6">
+<div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4 mb-6">
     @foreach (\App\Models\User::ROLES as $role => $label)
         <div class="bg-white rounded-xl border border-slate-200 p-5">
             <p class="text-2xl font-semibold">{{ $counts[$role] ?? 0 }}</p>

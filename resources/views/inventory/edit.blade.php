@@ -7,10 +7,10 @@
 
 <h1 class="text-xl font-semibold mb-6">{{ $product->name }}</h1>
 
-<div class="grid grid-cols-3 gap-6">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     {{-- Product details --}}
     <form method="POST" action="{{ route('inventory.update', $product) }}"
-          class="col-span-2 bg-white rounded-xl border border-slate-200 p-6">
+          class="lg:col-span-2 bg-white rounded-xl border border-slate-200 p-6">
         @csrf
         @method('PUT')
         <h2 class="font-semibold mb-4">Product Details</h2>

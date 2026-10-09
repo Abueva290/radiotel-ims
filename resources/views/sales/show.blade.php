@@ -11,12 +11,12 @@
     ];
 @endphp
 
-<div class="flex items-start justify-between mb-6">
+<div class="flex flex-wrap items-start justify-between gap-4 mb-6">
     <div>
         <h1 class="text-xl font-semibold">{{ $sale->invoice_no }}</h1>
         <p class="text-sm text-slate-500">{{ $sale->customer->name }} · {{ $sale->sale_date->format('F d, Y') }}</p>
     </div>
-    <div class="flex gap-2">
+    <div class="flex flex-wrap gap-2">
         <a href="{{ route('sales.document', [$sale, 'invoice']) }}" target="_blank"
            class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-700 text-white text-sm hover:bg-slate-800">
             <i class="ti ti-file-invoice text-base"></i> Charge Invoice
@@ -29,9 +29,10 @@
     </div>
 </div>
 
-<div class="grid grid-cols-3 gap-6">
-    <div class="col-span-2 bg-white rounded-xl border border-slate-200 p-6">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 p-6">
         <h2 class="font-semibold mb-4">Items</h2>
+        <div class="overflow-x-auto">
         <table class="w-full text-sm">
             <thead class="text-xs uppercase text-slate-400 border-b border-slate-100">
                 <tr>
@@ -52,6 +53,7 @@
                 @endforeach
             </tbody>
         </table>
+        </div>
 
         <div class="flex justify-end items-baseline gap-6 mt-4 pt-4 border-t border-slate-100">
             <p class="text-sm text-slate-500">Total</p>

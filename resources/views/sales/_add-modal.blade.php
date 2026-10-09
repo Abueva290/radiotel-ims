@@ -12,13 +12,13 @@
      @keydown.escape.window="open = false">
 
     <div x-show="open" style="display: none"
-         class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4"
+         class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-2 sm:p-4"
          @click.self="open = false">
 
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-5xl max-h-[92vh] overflow-y-auto">
 
             {{-- Header --}}
-            <div class="flex items-center justify-between px-8 py-5 border-b border-slate-100 sticky top-0 bg-white z-10">
+            <div class="flex items-center justify-between px-5 sm:px-8 py-5 border-b border-slate-100 sticky top-0 bg-white z-10">
                 <div>
                     <h2 class="text-lg font-semibold">New Sale</h2>
                     <p class="text-xs text-slate-400">
@@ -30,7 +30,7 @@
                         class="w-9 h-9 rounded-full border border-slate-200 text-slate-500 hover:bg-slate-50">✕</button>
             </div>
 
-            <form method="POST" action="{{ route('sales.store') }}" class="px-8 py-6"
+            <form method="POST" action="{{ route('sales.store') }}" class="px-4 sm:px-8 py-6"
                   x-data="saleForm(@js($productData), @js($oldItems))">
                 @csrf
                 <input type="hidden" name="_form" value="add-sale">
@@ -46,10 +46,10 @@
                 @endif
 
                 {{-- Sale details --}}
-                <div class="border border-slate-200 rounded-xl p-6 mb-5">
+                <div class="border border-slate-200 rounded-xl p-4 sm:p-6 mb-5">
                     <h3 class="font-semibold text-[15px] mb-4">Sale Information</h3>
-                    <div class="grid grid-cols-4 gap-5">
-                        <div class="col-span-2">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                        <div class="sm:col-span-2">
                             <label class="block text-sm font-medium mb-1.5">Customer</label>
                             <select name="customer_id" class="{{ $input }} truncate">
                                 <option value="">Select customer...</option>
@@ -74,7 +74,7 @@
                 </div>
 
                 {{-- Items --}}
-                <div class="border border-slate-200 rounded-xl p-6">
+                <div class="border border-slate-200 rounded-xl p-4 sm:p-6">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="font-semibold text-[15px]">Items</h3>
                         <button type="button" @click="addRow()"

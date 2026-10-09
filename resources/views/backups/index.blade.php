@@ -10,7 +10,7 @@
         : number_format($bytes / 1024, 1) . ' KB';
 @endphp
 
-<div class="flex items-start justify-between mb-6">
+<div class="flex flex-wrap items-start justify-between gap-4 mb-6">
     <div>
         <h1 class="text-xl font-semibold">Backups</h1>
         <p class="text-sm text-slate-500">Copies of the database that can be used to restore records if something goes wrong</p>
@@ -35,7 +35,7 @@
     </div>
 @endif
 
-<div class="grid grid-cols-3 gap-4 mb-6">
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
     <div class="bg-white rounded-xl border border-slate-200 p-5">
         <p class="text-xs text-slate-500">Last backup</p>
         <p class="text-lg font-semibold mt-1">{{ $latest ? $latest['date']->format('M d, Y h:i A') : '—' }}</p>

@@ -27,7 +27,7 @@
             class="px-4 py-2 rounded-lg bg-slate-700 text-white text-sm hover:bg-slate-800">+ Add Product</button>
 </div>
 
-<div class="grid grid-cols-4 gap-4 mb-6">
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
     @foreach ($cards as [$label, $value])
         <div class="bg-white rounded-xl border border-slate-200 p-5">
             <p class="text-xs text-slate-500">{{ $label }}</p>
@@ -38,7 +38,7 @@
 
 <form method="GET" class="mb-4">
     <input type="text" name="search" value="{{ $search }}" placeholder="Search product or brand..."
-           class="w-72 rounded-lg border-slate-300 text-sm focus:border-slate-500 focus:ring-slate-500">
+           class="w-full sm:w-72 rounded-lg border-slate-300 text-sm focus:border-slate-500 focus:ring-slate-500">
 </form>
 
 <div class="bg-white rounded-xl border border-slate-200 overflow-x-auto">
