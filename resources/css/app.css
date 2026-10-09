@@ -33,3 +33,12 @@
         @apply inline-block whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium bg-green-50 text-green-700 hover:bg-green-100;
     }
 }
+
+/* Phones and tablets: tables scroll sideways inside their card instead of
+   squeezing every cell into a tall, narrow column */
+@media (max-width: 1023px) {
+    .overflow-x-auto > table th,
+    .overflow-x-auto > table td {
+        white-space: nowrap;
+    }
+}

@@ -79,16 +79,25 @@
     $showErrorBanner = $errors->any() && ! old('_form');
 @endphp
 
-<div class="flex min-h-screen">
+<div class="flex min-h-screen" x-data="{ nav: false }" @keydown.window.escape="nav = false">
 
-    {{-- Sidebar --}}
-    <aside class="w-64 shrink-0 bg-white border-r border-slate-200 flex flex-col sticky top-0 h-screen">
+    {{-- Dark background behind the menu on phones; tap it to close the menu --}}
+    <div x-show="nav" x-transition.opacity @click="nav = false" style="display: none"
+         class="fixed inset-0 z-40 bg-slate-900/40 lg:hidden"></div>
+
+    {{-- Sidebar: slides in on phones and tablets, always visible on laptops and desktops --}}
+    <aside class="fixed inset-y-0 left-0 z-50 w-64 shrink-0 bg-white border-r border-slate-200 flex flex-col h-screen
+                  -translate-x-full transition-transform duration-200 lg:sticky lg:top-0 lg:translate-x-0"
+           :class="nav && '!translate-x-0 shadow-xl'">
         <div class="flex items-center gap-3 px-5 h-16 border-b border-slate-100">
             <x-app-logo class="w-10 h-10" />
-            <div>
+            <div class="flex-1">
                 <p class="font-semibold leading-tight">Radiotel</p>
                 <p class="text-xs text-slate-400">Inventory & Sales · v1.0</p>
             </div>
+            <button type="button" @click="nav = false" class="lg:hidden p-1 text-slate-400 hover:text-slate-700" aria-label="Close menu">
+                <i class="ti ti-x text-xl"></i>
+            </button>
         </div>
 
         <nav class="flex-1 overflow-y-auto px-3 py-3">
@@ -172,11 +181,17 @@
 
     {{-- Main --}}
     <main class="flex-1 min-w-0">
-        <header class="sticky top-0 z-30 flex items-center justify-between px-8 h-16 bg-white border-b border-slate-200">
-            <p class="text-sm text-slate-400">
-                Radiotel <span class="mx-1">/</span> <span class="font-semibold text-slate-700">@yield('title')</span>
-            </p>
-            <div class="flex items-center gap-4">
+        <header class="sticky top-0 z-30 flex items-center justify-between gap-3 px-4 sm:px-6 lg:px-8 h-16 bg-white border-b border-slate-200">
+            <div class="flex items-center gap-3 min-w-0">
+                <button type="button" @click="nav = true" class="lg:hidden -ml-1 p-1.5 rounded-lg text-slate-600 hover:bg-slate-100" aria-label="Open menu">
+                    <i class="ti ti-menu-2 text-2xl"></i>
+                </button>
+                <p class="text-sm text-slate-400 truncate">
+                    <span class="hidden sm:inline">Radiotel <span class="mx-1">/</span></span>
+                    <span class="font-semibold text-slate-700">@yield('title')</span>
+                </p>
+            </div>
+            <div class="flex items-center gap-4 shrink-0">
                 <span class="hidden md:inline-flex items-center gap-1.5 text-sm text-slate-500">
                     <i class="ti ti-calendar text-base"></i> {{ now()->format('l, M d, Y') }}
                 </span>
@@ -184,7 +199,7 @@
             </div>
         </header>
 
-        <div class="p-8 max-w-[1600px]">
+        <div class="p-4 sm:p-6 lg:p-8 max-w-[1600px]">
             @if (session('success'))
                 <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 6000)"
                      class="mb-6 flex items-start gap-3 rounded-lg bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-700">
