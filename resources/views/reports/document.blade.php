@@ -68,7 +68,7 @@
                     @if ($meta['dated'])
                         Period: {{ $from->format('M d, Y') }} – {{ $to->format('M d, Y') }}
                     @else
-                        As of {{ $generatedAt->format('M d, Y') }}
+                        As of {{ $to->format('M d, Y') }}
                     @endif
                 </div>
             </td>

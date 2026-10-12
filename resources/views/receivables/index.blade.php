@@ -32,7 +32,17 @@
 </div>
 
 <div class="bg-white rounded-xl border border-slate-200 overflow-x-auto mb-6">
-    <h2 class="font-semibold px-6 pt-5 pb-3">Customer Balances</h2>
+    <div class="flex flex-wrap items-center justify-between gap-3 px-6 pt-5 pb-3">
+        <h2 class="font-semibold">Customer Balances</h2>
+        <form method="GET" action="{{ route('receivables.index') }}" class="flex items-center gap-2">
+        <label for="sort" class="text-sm text-slate-500">Sort by due date</label>
+        <select id="sort" name="sort" onchange="this.form.submit()"
+                class="rounded-lg border-slate-300 text-sm focus:border-slate-500 focus:ring-slate-500">
+            <option value="asc"  @selected($sort === 'asc')>Ascending (nearest due date first)</option>
+            <option value="desc" @selected($sort === 'desc')>Descending (farthest due date first)</option>
+        </select>
+    </form>
+    </div>
     <table class="w-full text-sm">
         <thead class="text-xs uppercase text-slate-400 border-y border-slate-100">
             <tr>

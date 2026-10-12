@@ -16,10 +16,14 @@ class PayableController extends Controller
     {
         $supplierId = $request->integer('supplier') ?: null;
 
+        // Due-date sort: asc = nearest due date first. Settled invoices always stay at the bottom.
+        $sort = $request->input('sort') === 'desc' ? 'desc' : 'asc';
+
         $invoices = SupplierInvoice::with('supplier')
             ->when($supplierId, fn ($q) => $q->where('supplier_id', $supplierId))
-            ->orderByRaw("FIELD(status, 'unpaid', 'partial', 'paid')")
-            ->orderBy('due_date')
+            ->orderByRaw("status = 'paid'")
+            ->orderBy('due_date', $sort)
+            ->orderBy('id')
             ->get();
 
         $stats = [
@@ -56,6 +60,7 @@ class PayableController extends Controller
             'suppliers'     => $suppliers, // alphabetical, used by the Record Invoice form
             'supplierCards' => $suppliers->sortBy([['state_rank', 'asc'], ['outstanding', 'desc']])->values(),
             'selected'      => $supplierId ? $suppliers->firstWhere('id', $supplierId) : null,
+            'sort'          => $sort,
         ]);
     }
 

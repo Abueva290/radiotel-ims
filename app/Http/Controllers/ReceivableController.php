@@ -10,11 +10,15 @@ use Illuminate\Validation\ValidationException;
 
 class ReceivableController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        // Due-date sort: asc = nearest due date first. Settled items always stay at the bottom.
+        $sort = $request->input('sort') === 'desc' ? 'desc' : 'asc';
+
         $receivables = Receivable::with('customer', 'sale', 'repairJob')
-            ->orderByRaw("FIELD(status, 'unpaid', 'partial', 'paid')")
-            ->orderBy('due_date')
+            ->orderByRaw("status = 'paid'")
+            ->orderBy('due_date', $sort)
+            ->orderBy('id')
             ->get();
 
         $stats = [
@@ -30,7 +34,7 @@ class ReceivableController extends Controller
             ->take(5)
             ->get();
 
-        return view('receivables.index', compact('receivables', 'stats', 'recent'));
+        return view('receivables.index', compact('receivables', 'stats', 'recent', 'sort'));
     }
 
     public function show(Receivable $receivable)

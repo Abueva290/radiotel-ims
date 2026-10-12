@@ -23,8 +23,8 @@
     $owing   = $supplierCards->where('state_rank', '<', 3);
     $settled = $supplierCards->where('state_rank', 3);
     $filterUrl = fn ($s) => ($selected && $selected->id === $s->id)
-        ? route('payables.index')
-        : route('payables.index', ['supplier' => $s->id]);
+        ? route('payables.index', ['sort' => $sort])
+        : route('payables.index', ['supplier' => $s->id, 'sort' => $sort]);
 @endphp
 
 <div class="flex items-start justify-between mb-6">
@@ -125,9 +125,20 @@
 {{-- Invoices --}}
 <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 mb-3">
     <h2 class="text-base font-semibold">{{ $selected ? 'Invoices from ' . $selected->name : 'All supplier invoices' }}</h2>
-    @if ($selected)
-        <a href="{{ route('payables.index') }}" class="text-sm text-slate-600 underline hover:text-slate-900">Show all suppliers</a>
-    @endif
+    <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+        @if ($selected)
+            <a href="{{ route('payables.index', ['sort' => $sort]) }}" class="text-sm text-slate-600 underline hover:text-slate-900">Show all suppliers</a>
+        @endif
+        <form method="GET" action="{{ route('payables.index') }}" class="flex items-center gap-2">
+        @if ($selected)<input type="hidden" name="supplier" value="{{ $selected->id }}">@endif
+        <label for="sort" class="text-sm text-slate-500">Sort by due date</label>
+        <select id="sort" name="sort" onchange="this.form.submit()"
+                class="rounded-lg border-slate-300 text-sm focus:border-slate-500 focus:ring-slate-500">
+            <option value="asc"  @selected($sort === 'asc')>Ascending (nearest due date first)</option>
+            <option value="desc" @selected($sort === 'desc')>Descending (farthest due date first)</option>
+        </select>
+    </form>
+    </div>
 </div>
 
 <div class="bg-white rounded-xl border border-slate-200 overflow-x-auto">

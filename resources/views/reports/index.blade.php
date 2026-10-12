@@ -48,7 +48,7 @@
 </div>
 
 {{-- Date range --}}
-<form method="GET" class="bg-white rounded-xl border border-slate-200 px-5 py-4 mb-5 flex flex-wrap items-end gap-3">
+<form method="GET" x-data="{ blocked: {{ $errors->has('export') ? 'true' : 'false' }} }" class="bg-white rounded-xl border border-slate-200 px-5 py-4 mb-5 flex flex-wrap items-end gap-3">
     <input type="hidden" name="tab" value="{{ $tab }}">
     <div>
         <label class="block text-xs text-slate-500 mb-1">From</label>
@@ -60,12 +60,26 @@
     </div>
     <button class="px-4 py-2 rounded-lg bg-slate-700 text-white text-sm hover:bg-slate-800">Generate report</button>
     <div class="flex gap-2 ml-auto">
-        <a href="{{ route('reports.show', ['type' => $tab] + $range) }}" target="_blank"
-           class="px-4 py-2 rounded-lg bg-white border border-slate-300 text-sm hover:bg-slate-50">Print</a>
-        <a href="{{ route('reports.show', ['type' => $tab, 'pdf' => 1] + $range) }}"
-           class="px-4 py-2 rounded-lg bg-white border border-slate-300 text-sm hover:bg-slate-50">Export PDF</a>
+        @if ($noData)
+            <button type="button" @click="blocked = true" aria-disabled="true"
+                    class="px-4 py-2 rounded-lg bg-slate-100 border border-slate-200 text-sm text-slate-400 cursor-not-allowed">Print</button>
+            <button type="button" @click="blocked = true" aria-disabled="true"
+                    class="px-4 py-2 rounded-lg bg-slate-100 border border-slate-200 text-sm text-slate-400 cursor-not-allowed">Export PDF</button>
+        @else
+            <a href="{{ route('reports.show', ['type' => $tab] + $range) }}" target="_blank"
+               class="px-4 py-2 rounded-lg bg-white border border-slate-300 text-sm hover:bg-slate-50">Print</a>
+            <a href="{{ route('reports.show', ['type' => $tab, 'pdf' => 1] + $range) }}"
+               class="px-4 py-2 rounded-lg bg-white border border-slate-300 text-sm hover:bg-slate-50">Export PDF</a>
+        @endif
     </div>
+    <p x-show="blocked" style="display:none" role="alert" class="basis-full text-sm text-red-700">Dates selected contain no data.</p>
 </form>
+
+@if ($noData)
+    <div class="mb-5 rounded-xl border border-red-200 bg-red-50 px-5 py-3 text-sm text-red-700" role="alert">
+        No data found for the dates selected ({{ $from->format('M d, Y') }} to {{ $to->format('M d, Y') }}). Please choose another date range.
+    </div>
+@endif
 
 {{-- Summary across all modules --}}
 <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3 mb-6">
@@ -89,6 +103,7 @@
 </div>
 
 {{-- The selected report --}}
+@unless ($noData)
 <div class="bg-white rounded-xl border border-slate-200 p-6">
     <div class="flex items-baseline justify-between gap-4 mb-4">
         <div>
@@ -96,7 +111,7 @@
             <p class="text-sm text-slate-500">{{ $meta['desc'] }}</p>
         </div>
         <p class="text-sm text-slate-500 whitespace-nowrap">
-            {{ $meta['dated'] ? $from->format('M d, Y') . ' to ' . $to->format('M d, Y') : 'As of ' . now()->format('M d, Y') }}
+            {{ $meta['dated'] ? $from->format('M d, Y') . ' to ' . $to->format('M d, Y') : 'As of ' . $to->format('M d, Y') }}
         </p>
     </div>
 
@@ -104,4 +119,5 @@
         @include('reports.partials.' . $tab)
     </div>
 </div>
+@endunless
 @endsection

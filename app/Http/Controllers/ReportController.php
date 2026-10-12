@@ -58,6 +58,8 @@ class ReportController extends Controller
             'from'     => $from,
             'to'       => $to,
             'overview' => $overview,
+            // Every report needs at least one record for the chosen dates
+            'noData'   => ! $this->rangeHasData($tab, $from, $to),
         ] + $this->{Str::camel($tab)}($from, $to));
     }
 
@@ -72,6 +74,14 @@ class ReportController extends Controller
 
         $from = Carbon::parse($request->input('from', now()->startOfMonth()))->startOfDay();
         $to   = Carbon::parse($request->input('to', now()))->endOfDay();
+
+        if (! $this->rangeHasData($type, $from, $to)) {
+            return redirect()->route('reports.index', [
+                'tab'  => $type,
+                'from' => $from->toDateString(),
+                'to'   => $to->toDateString(),
+            ])->withErrors(['export' => 'Dates selected contain no data.']);
+        }
 
         $data = [
             'type'        => $type,
@@ -90,6 +100,24 @@ class ReportController extends Controller
         }
 
         return view('reports.document', $data);
+    }
+
+    // Every report needs at least one record for the chosen dates.
+    // Dated reports look inside the range; aging and low-stock reports are
+    // "as of" the To date, so they use records that already existed by then.
+    private function rangeHasData(string $type, Carbon $from, Carbon $to): bool
+    {
+        $dates = [$from->toDateString(), $to->toDateString()];
+
+        return match ($type) {
+            'sales'     => Sale::whereBetween('sale_date', $dates)->exists(),
+            'repairs'   => RepairJob::whereBetween('date_received', $dates)->exists(),
+            'inventory' => InventoryMovement::whereBetween('movement_date', [$from, $to])->exists(),
+            'ar-aging'  => Receivable::where('status', '!=', 'paid')->where('created_at', '<=', $to)->exists(),
+            'ap-aging'  => SupplierInvoice::where('status', '!=', 'paid')->where('created_at', '<=', $to)->exists(),
+            'low-stock' => Product::lowStock()->where('status', 'active')->where('created_at', '<=', $to)->exists(),
+            default     => false,
+        };
     }
 
     private function sales(Carbon $from, Carbon $to): array
@@ -140,6 +168,7 @@ class ReportController extends Controller
     {
         $rows = Receivable::with('customer', 'sale', 'repairJob')
             ->where('status', '!=', 'paid')
+            ->where('created_at', '<=', $to)
             ->orderBy('due_date')
             ->get()
             ->map(fn ($r) => $this->agingRow(
@@ -156,6 +185,7 @@ class ReportController extends Controller
     {
         $rows = SupplierInvoice::with('supplier')
             ->where('status', '!=', 'paid')
+            ->where('created_at', '<=', $to)
             ->orderBy('due_date')
             ->get()
             ->map(fn ($i) => $this->agingRow($i->supplier->name, $i->invoice_no, $i->due_date, $i->balance));
@@ -183,7 +213,7 @@ class ReportController extends Controller
 
     private function lowStock(Carbon $from, Carbon $to): array
     {
-        $products = Product::lowStock()->where('status', 'active')->orderBy('stock_qty')->orderBy('name')->get();
+        $products = Product::lowStock()->where('status', 'active')->where('created_at', '<=', $to)->orderBy('stock_qty')->orderBy('name')->get();
 
         return ['rows' => $products, 'totals' => ['count' => $products->count()]];
     }
