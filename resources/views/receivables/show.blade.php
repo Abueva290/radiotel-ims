@@ -5,11 +5,6 @@
 @section('content')
 @php
     $input = 'w-full rounded-lg border-slate-300 text-sm focus:border-slate-500 focus:ring-slate-500';
-    $badge = [
-        'unpaid'  => 'bg-red-100 text-red-700',
-        'partial' => 'bg-amber-100 text-amber-700',
-        'paid'    => 'bg-green-100 text-green-700',
-    ];
     $reference = $receivable->sale?->invoice_no ?? $receivable->repairJob?->job_no ?? '—';
 @endphp
 
@@ -39,9 +34,7 @@
                 </div>
             </div>
             <div class="flex justify-center mt-4">
-                <span class="px-3 py-1 rounded-full text-xs font-medium {{ $badge[$receivable->status] }}">
-                    {{ ucfirst($receivable->status) }}
-                </span>
+                <x-badge type="payment" :value="\App\Support\Badge::paymentStatus($receivable->status, $receivable->due_date)" size="md" />
             </div>
         </div>
 
@@ -84,7 +77,11 @@
             </div>
         @else
             <form method="POST" action="{{ route('receivables.payment', $receivable) }}"
-                  class="bg-white rounded-xl border border-slate-200 p-6">
+                  class="bg-white rounded-xl border border-slate-200 p-6"
+                  x-data="{ amt: '{{ old('amount_paid') }}' }"
+                  :data-confirm="`Record a payment of ₱${Number(amt || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })} from {{ e(addslashes($receivable->customer->name)) }} for {{ $reference }}?\n\nRemaining balance after this payment: ₱${Math.max(0, {{ (float) $receivable->balance }} - Number(amt || 0)).toLocaleString('en-PH', { minimumFractionDigits: 2 })}. Payments cannot be edited once recorded.`"
+                  data-confirm-title="Record customer payment"
+                  data-confirm-button="Yes, record payment">
                 @csrf
                 <h2 class="font-semibold">Record Payment</h2>
                 <p class="text-sm text-slate-500 mb-4">
@@ -92,7 +89,7 @@
                 </p>
 
                 <label class="block text-sm font-medium mb-1">Amount Paid (₱)</label>
-                <input type="number" step="0.01" name="amount_paid" value="{{ old('amount_paid') }}" class="{{ $input }}">
+                <input type="number" step="0.01" min="0.01" max="{{ $receivable->balance }}" name="amount_paid" x-model="amt" required class="{{ $input }}">
                 @error('amount_paid') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
 
                 <label class="block text-sm font-medium mb-1 mt-3">Payment Method</label>

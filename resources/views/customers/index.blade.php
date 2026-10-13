@@ -61,7 +61,10 @@
                             <a href="{{ route('customers.edit', $customer) }}" class="btn-action">Edit</a>
 
                             <form method="POST" action="{{ route('customers.archive', $customer) }}"
-                                  onsubmit="return confirm(@js(($showArchived ? 'Restore ' : 'Archive ') . $customer->name . '?'))">
+                                  data-confirm="{{ $showArchived ? 'Restore ' . $customer->name . '? It will be available for new transactions again.' : 'Archive ' . $customer->name . '? It will be hidden from new transactions. Past records are kept.' }}"
+                                  data-confirm-title="{{ $showArchived ? 'Restore record' : 'Archive record' }}"
+                                  data-confirm-button="{{ $showArchived ? 'Yes, restore' : 'Yes, archive' }}"
+                                  data-confirm-tone="{{ $showArchived ? 'primary' : 'warning' }}">
                                 @csrf
                                 @method('PATCH')
                                 <button class="{{ $showArchived ? 'btn-action-success' : 'btn-action-warning' }}">

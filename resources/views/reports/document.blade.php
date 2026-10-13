@@ -42,6 +42,11 @@
         .foot { margin-top: 26px; font-size: 11px; color: #8a90a0; border-top: 1px solid #e6e8ee; padding-top: 10px; }
 
         @media print { .toolbar { display: none; } .screen { background: #fff; padding: 0; } .screen .sheet { padding: 0; } }
+            .t-blue { background: #e0ecfd; color: #1d4ed8; }
+        .t-purple { background: #efe5fd; color: #6d28d9; }
+        .t-orange { background: #fdeadb; color: #c2410c; }
+        .t-teal { background: #d9f3ef; color: #0f766e; }
+        .t-dark { background: #334155; color: #fff; }
     </style>
 </head>
 <body class="{{ $isPdf ? '' : 'screen' }}">

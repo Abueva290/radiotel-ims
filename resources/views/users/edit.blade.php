@@ -9,7 +9,7 @@
 <p class="text-sm text-slate-500 mb-6">
     Last login: {{ $user->last_login_at?->format('M d, Y h:i A') ?? 'Never' }}
     @if ($user->must_change_password)
-        <span class="ml-2 px-2 py-0.5 rounded-full text-xs bg-amber-100 text-amber-700">Pending password change</span>
+        <x-badge tone="amber" class="ml-2">Pending password change</x-badge>
     @endif
 </p>
 
@@ -51,7 +51,11 @@
     </form>
 
     <form method="POST" action="{{ route('users.password', $user) }}"
-          class="bg-white rounded-xl border border-slate-200 p-6 self-start">
+          class="bg-white rounded-xl border border-slate-200 p-6 self-start"
+          data-confirm="Reset the password of {{ $user->name }}? Their old password will stop working and they must change the new one at next sign-in."
+          data-confirm-title="Reset password"
+          data-confirm-button="Yes, reset password"
+          data-confirm-tone="warning">
         @csrf
         @method('PUT')
         <h2 class="font-semibold">Reset Password</h2>

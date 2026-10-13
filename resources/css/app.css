@@ -42,3 +42,38 @@
         white-space: nowrap;
     }
 }
+/* ---- Panel revisions (Oct 2026) ---- */
+@layer components {
+    .btn-action-danger {
+        @apply inline-block whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium bg-red-50 text-red-700 hover:bg-red-100;
+    }
+
+    /* Clickable KPI / summary cards: each one opens the filtered list behind its number */
+    .kpi-card {
+        @apply block bg-white rounded-xl border border-slate-200 p-5 cursor-pointer transition
+               hover:border-slate-400 hover:shadow-md hover:-translate-y-0.5
+               focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2
+               active:translate-y-0 active:shadow-sm;
+    }
+    .kpi-card-active {
+        @apply border-slate-700 ring-1 ring-slate-700;
+    }
+    .kpi-arrow {
+        @apply text-slate-300 transition;
+    }
+    .kpi-card:hover .kpi-arrow,
+    .kpi-card:focus-visible .kpi-arrow {
+        @apply text-slate-700 translate-x-0.5;
+    }
+
+    /* Read-only label/value rows in detail panels */
+    .detail-row {
+        @apply flex justify-between gap-4 py-1.5;
+    }
+    .detail-row dt {
+        @apply text-slate-500 shrink-0;
+    }
+    .detail-row dd {
+        @apply text-right min-w-0;
+    }
+}

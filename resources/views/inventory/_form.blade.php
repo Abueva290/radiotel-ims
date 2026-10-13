@@ -39,6 +39,14 @@
     </div>
 
     <div>
+        <label class="block text-sm font-medium mb-1">Warranty (months)</label>
+        <input type="number" min="1" max="120" name="warranty_months" value="{{ old('warranty_months', $p?->warranty_months) }}"
+               placeholder="Leave blank if no warranty" class="{{ $input }}">
+        <p class="text-xs text-slate-400 mt-1">Counted from the date of sale.</p>
+        @error('warranty_months') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
+    </div>
+
+    <div>
         <label class="block text-sm font-medium mb-1">Reorder Level</label>
         <input type="number" name="reorder_level" value="{{ old('reorder_level', $p?->reorder_level ?? 0) }}" class="{{ $input }}">
         @error('reorder_level') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
@@ -57,6 +65,27 @@
                 <option value="active" @selected(old('status', $p->status) === 'active')>Active</option>
                 <option value="discontinued" @selected(old('status', $p->status) === 'discontinued')>Discontinued</option>
             </select>
+        </div>
+    @endif
+
+    <div class="sm:col-span-2">
+        <label class="flex items-start gap-2 text-sm">
+            <input type="hidden" name="is_serialized" value="0">
+            <input type="checkbox" name="is_serialized" value="1" @checked(old('is_serialized', $p?->is_serialized))
+                   class="mt-0.5 rounded border-slate-300 text-slate-700 focus:ring-slate-500">
+            <span>
+                <span class="font-medium">Track individual units by serial number</span>
+                <span class="block text-xs text-slate-400">For radios and equipment that need individual identification. Leave off for items counted by quantity only (cables, parts).</span>
+            </span>
+        </label>
+        @error('is_serialized') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
+    </div>
+
+    @if (! $p)
+        <div class="sm:col-span-2">
+            <label class="block text-sm font-medium mb-1">Serial Numbers <span class="font-normal text-slate-400">(serial-tracked products only, one per unit of initial stock)</span></label>
+            <textarea name="serials" rows="3" class="{{ $input }} font-mono uppercase">{{ old('serials') }}</textarea>
+            @error('serials') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
         </div>
     @endif
 </div>

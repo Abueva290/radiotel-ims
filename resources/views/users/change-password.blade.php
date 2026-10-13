@@ -1,4 +1,3 @@
-$code = @'
 @extends('layouts.admin')
 
 @section('title', 'Change Password')
@@ -36,5 +35,3 @@ $code = @'
     </form>
 </div>
 @endsection
-'@
-[IO.File]::WriteAllText("$PWD\resources\views\auth\change-password.blade.php", $code)

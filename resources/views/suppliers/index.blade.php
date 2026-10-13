@@ -71,7 +71,10 @@
                             <a href="{{ route('suppliers.edit', $supplier) }}" class="btn-action">Edit</a>
 
                             <form method="POST" action="{{ route('suppliers.archive', $supplier) }}"
-                                  onsubmit="return confirm(@js(($showArchived ? 'Restore ' : 'Archive ') . $supplier->name . '?'))">
+                                  data-confirm="{{ $showArchived ? 'Restore ' . $supplier->name . '? It will be available for new transactions again.' : 'Archive ' . $supplier->name . '? It will be hidden from new transactions. Past records are kept.' }}"
+                                  data-confirm-title="{{ $showArchived ? 'Restore record' : 'Archive record' }}"
+                                  data-confirm-button="{{ $showArchived ? 'Yes, restore' : 'Yes, archive' }}"
+                                  data-confirm-tone="{{ $showArchived ? 'primary' : 'warning' }}">
                                 @csrf
                                 @method('PATCH')
                                 <button class="{{ $showArchived ? 'btn-action-success' : 'btn-action-warning' }}">

@@ -1,7 +1,7 @@
 <table class="cards">
     <tr>
-        <td><div class="label">Items Needing Reorder</div><div class="value">{{ $totals['count'] }}</div></td>
-        <td><div class="label">Out of Stock</div><div class="value">{{ $rows->where('stock_qty', '<=', 0)->count() }}</div></td>
+        @include('reports.partials._card', ['label' => 'Items Needing Reorder', 'value' => $totals['count'], 'url' => route('inventory.index', ['stock' => 'low'])])
+        @include('reports.partials._card', ['label' => 'Out of Stock', 'value' => $rows->where('stock_qty', '<=', 0)->count(), 'url' => route('inventory.index', ['stock' => 'out'])])
         <td style="background: #fff; border: 0;"></td>
         <td style="background: #fff; border: 0;"></td>
     </tr>
@@ -26,7 +26,7 @@
                 <td class="c">{{ $p->reorder_level }}</td>
                 <td class="c">{{ max(0, $p->reorder_level - $p->stock_qty) }}</td>
                 <td class="c">
-                    <span class="tag {{ $p->stock_qty <= 0 ? 't-red' : 't-amber' }}">{{ $p->stock_qty <= 0 ? 'Out of Stock' : 'Low Stock' }}</span>
+                    {!! \App\Support\Badge::tag('stock', $p->stockStatus()) !!}
                 </td>
             </tr>
         @empty

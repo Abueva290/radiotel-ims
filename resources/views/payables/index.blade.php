@@ -4,27 +4,28 @@
 
 @section('content')
 @php
-    $badge = [
-        'unpaid'  => 'bg-red-100 text-red-700',
-        'partial' => 'bg-amber-100 text-amber-700',
-        'paid'    => 'bg-green-100 text-green-700',
-    ];
+    // Each card filters the invoice list below to the invoices behind its amount
     $cards = [
-        ['Total Payables', '₱' . number_format($stats['total'], 2)],
-        ['Overdue', '₱' . number_format($stats['overdue'], 2)],
-        ['Due within 14 days', '₱' . number_format($stats['due_soon'], 2)],
+        ['Total Payables', '₱' . number_format($stats['total'], 2), $stats['open_count'] . ' open invoice(s)', null],
+        ['Overdue', '₱' . number_format($stats['overdue'], 2), $stats['overdue_count'] . ' invoice(s) past due', 'overdue'],
+        ['Due within 14 days', '₱' . number_format($stats['due_soon'], 2), $stats['due_soon_count'] . ' invoice(s) due soon', 'due_soon'],
     ];
+    $filterLabels = ['overdue' => 'Overdue only', 'due_soon' => 'Due within 14 days'];
     $states = [
-        0 => ['Overdue',  'bg-red-100 text-red-700'],
-        1 => ['Due soon', 'bg-amber-100 text-amber-700'],
-        2 => ['Current',  'bg-slate-100 text-slate-700'],
-        3 => ['Settled',  'bg-green-100 text-green-700'],
+        0 => ['Overdue',  'red'],
+        1 => ['Due soon', 'amber'],
+        2 => ['Current',  'gray'],
+        3 => ['Settled',  'green'],
     ];
     $owing   = $supplierCards->where('state_rank', '<', 3);
     $settled = $supplierCards->where('state_rank', 3);
-    $filterUrl = fn ($s) => ($selected && $selected->id === $s->id)
-        ? route('payables.index', ['sort' => $sort])
-        : route('payables.index', ['supplier' => $s->id, 'sort' => $sort]);
+    // Builds a list URL, keeping the other active filters unless overridden
+    $listUrl = fn (array $override = []) => route('payables.index', array_filter(array_merge([
+        'supplier' => $selected?->id,
+        'filter'   => $filter,
+        'sort'     => $sort !== 'asc' ? $sort : null,
+    ], $override))) . '#invoices';
+    $filterUrl = fn ($s) => $listUrl(['supplier' => ($selected && $selected->id === $s->id) ? null : $s->id]);
 @endphp
 
 <div class="flex items-start justify-between mb-6">
@@ -38,11 +39,20 @@
 </div>
 
 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-    @foreach ($cards as [$label, $value])
-        <div class="bg-white rounded-xl border border-slate-200 p-5">
-            <p class="text-xs text-slate-500">{{ $label }}</p>
-            <p class="text-2xl font-semibold mt-2 tabular-nums">{{ $value }}</p>
-        </div>
+    @foreach ($cards as [$label, $value, $note, $key])
+        @php
+            $active = $key && $filter === $key;
+            $alert = $key === 'overdue' && $stats['overdue_count'];
+        @endphp
+        <a href="{{ $listUrl(['filter' => $active ? null : $key]) }}"
+           class="kpi-card {{ $active ? 'kpi-card-active' : '' }}"
+           aria-label="{{ $label }}: {{ $value }}. {{ $key ? 'Show these invoices' : 'Show all invoices' }}">
+            <p class="text-xs {{ $alert ? 'text-red-700' : 'text-slate-500' }}">{{ $label }}</p>
+            <p class="text-2xl font-semibold mt-2 tabular-nums {{ $alert ? 'text-red-600' : '' }}">{{ $value }}</p>
+            <p class="text-xs text-slate-400 mt-1 flex items-center justify-between gap-2">
+                <span class="truncate">{{ $note }}</span><i class="ti ti-arrow-right kpi-arrow"></i>
+            </p>
+        </a>
     @endforeach
 </div>
 
@@ -76,7 +86,7 @@
                         <p class="font-semibold truncate">{{ $supplier->name }}</p>
                         <p class="text-sm text-slate-500 truncate">{{ $supplier->contact_person ?? 'No contact person' }}</p>
                     </div>
-                    <span class="px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap {{ $stateCls }}">{{ $state }}</span>
+                    <x-badge :tone="$stateCls" size="md" class="relative">{{ $state }}</x-badge>
                 </div>
 
                 <p class="text-2xl font-semibold tabular-nums mt-4">₱{{ number_format((float) $supplier->outstanding, 2) }}</p>
@@ -123,14 +133,21 @@
 @endif
 
 {{-- Invoices --}}
-<div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 mb-3">
-    <h2 class="text-base font-semibold">{{ $selected ? 'Invoices from ' . $selected->name : 'All supplier invoices' }}</h2>
+<div id="invoices" class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 mb-3 scroll-mt-6">
+    <h2 class="text-base font-semibold">
+        {{ $selected ? 'Invoices from ' . $selected->name : 'All supplier invoices' }}
+        @if ($filter)
+            <span class="ml-2 text-sm font-normal text-slate-500">· {{ $filterLabels[$filter] }}
+                <a href="{{ $listUrl(['filter' => null]) }}" class="underline">Clear</a></span>
+        @endif
+    </h2>
     <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
         @if ($selected)
-            <a href="{{ route('payables.index', ['sort' => $sort]) }}" class="text-sm text-slate-600 underline hover:text-slate-900">Show all suppliers</a>
+            <a href="{{ $listUrl(['supplier' => null]) }}" class="text-sm text-slate-600 underline hover:text-slate-900">Show all suppliers</a>
         @endif
-        <form method="GET" action="{{ route('payables.index') }}" class="flex items-center gap-2">
+        <form method="GET" action="{{ route('payables.index') }}#invoices" class="flex items-center gap-2">
         @if ($selected)<input type="hidden" name="supplier" value="{{ $selected->id }}">@endif
+        @if ($filter)<input type="hidden" name="filter" value="{{ $filter }}">@endif
         <label for="sort" class="text-sm text-slate-500">Sort by due date</label>
         <select id="sort" name="sort" onchange="this.form.submit()"
                 class="rounded-lg border-slate-300 text-sm focus:border-slate-500 focus:ring-slate-500">
@@ -158,7 +175,7 @@
         <tbody>
             @forelse ($invoices as $invoice)
                 @php $overdue = $invoice->status !== 'paid' && $invoice->due_date->isPast(); @endphp
-                <tr class="border-b border-slate-50 hover:bg-slate-50">
+                <tr class="border-b border-slate-50 hover:bg-slate-50 {{ $overdue ? 'bg-red-50/40' : '' }}">
                     <td class="px-4 py-3 font-medium">{{ $invoice->invoice_no }}</td>
                     <td class="px-4 py-3">{{ $invoice->supplier->name }}</td>
                     <td class="px-4 py-3 text-right text-slate-500 tabular-nums">₱{{ number_format($invoice->amount, 2) }}</td>
@@ -169,7 +186,7 @@
                         @if ($overdue)<span class="text-xs">(overdue)</span>@endif
                     </td>
                     <td class="px-4 py-3 text-center">
-                        <span class="px-2 py-1 rounded-full text-xs font-medium {{ $badge[$invoice->status] }}">{{ ucfirst($invoice->status) }}</span>
+                        <x-badge type="payment" :value="\App\Support\Badge::paymentStatus($invoice->status, $invoice->due_date)" />
                     </td>
                     <td class="px-4 py-3 text-right">
                         {{-- Only the Operational Manager (admin) pays suppliers --}}
@@ -180,7 +197,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="8" class="px-4 py-8 text-center text-slate-400">{{ $selected ? 'No invoices from this supplier yet.' : 'No supplier invoices recorded yet.' }}</td>
+                    <td colspan="8" class="px-4 py-8 text-center text-slate-400">{{ $filter ? 'No invoices match this filter.' : ($selected ? 'No invoices from this supplier yet.' : 'No supplier invoices recorded yet.') }}</td>
                 </tr>
             @endforelse
         </tbody>

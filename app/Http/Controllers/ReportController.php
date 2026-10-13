@@ -158,7 +158,8 @@ class ReportController extends Controller
             'moves'  => $moves,
             'totals' => [
                 'count' => $products->count(),
-                'low'   => $products->filter(fn ($p) => $p->isLowStock())->count(),
+                // Same rule as Inventory ?stock=low: active products at or below reorder level
+                'low'   => $products->filter(fn ($p) => $p->status === 'active' && $p->isLowStock())->count(),
                 'value' => $products->sum(fn ($p) => $p->stock_qty * $p->unit_cost),
             ],
         ];
@@ -195,7 +196,7 @@ class ReportController extends Controller
 
     private function repairs(Carbon $from, Carbon $to): array
     {
-        $jobs = RepairJob::with('customer', 'assessor', 'parts.product')
+        $jobs = RepairJob::with('customer', 'assessor', 'technician', 'serialUnits', 'parts.product')
             ->whereBetween('date_received', [$from->toDateString(), $to->toDateString()])
             ->orderBy('date_received')->orderBy('id')
             ->get();
@@ -207,6 +208,13 @@ class ReportController extends Controller
                 'service' => $jobs->sum('service_fee'),
                 'parts'   => $jobs->sum('parts_cost'),
                 'total'   => $jobs->sum('total_amount'),
+                // Service timeframe summary
+                'overdue'  => $jobs->filter(fn ($j) => $j->isOverdue())->count(),
+                'finished' => $jobs->filter(fn ($j) => $j->completed_at)->count(),
+                'late'     => $jobs->filter(fn ($j) => $j->scheduleStatus() === 'finished_late')->count(),
+                'avg_hours' => ($done = $jobs->filter(fn ($j) => $j->completed_at && $j->received_at))->isNotEmpty()
+                    ? round($done->avg(fn ($j) => $j->received_at->diffInMinutes($j->completed_at)) / 60, 1)
+                    : null,
             ],
         ];
     }

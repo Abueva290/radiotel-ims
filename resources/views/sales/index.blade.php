@@ -4,12 +4,9 @@
 
 @section('content')
 @php
-    $badge = [
-        'unpaid'  => 'bg-red-100 text-red-700',
-        'partial' => 'bg-amber-100 text-amber-700',
-        'paid'    => 'bg-green-100 text-green-700',
-    ];
-    $tabs = ['' => 'All', 'unpaid' => 'Unpaid', 'partial' => 'Partial', 'paid' => 'Paid'];
+    use App\Support\Badge;
+    $tabs = ['' => 'All', 'outstanding' => 'Outstanding', 'unpaid' => 'Unpaid', 'partial' => 'Partial', 'overdue' => 'Overdue', 'paid' => 'Paid'];
+    $range = array_filter(['from' => $from, 'to' => $to]);
 @endphp
 
 <div class="flex items-start justify-between mb-6">
@@ -22,9 +19,18 @@
             class="px-4 py-2 rounded-lg bg-slate-700 text-white text-sm hover:bg-slate-800">+ New Sale</button>
 </div>
 
-<div class="flex gap-2 mb-4">
+@if ($range)
+    <div class="mb-3 flex flex-wrap items-center gap-2 text-sm text-slate-600">
+        <i class="ti ti-calendar"></i>
+        Showing sales from <span class="font-medium">{{ $from ? \Carbon\Carbon::parse($from)->format('M d, Y') : 'the start' }}</span>
+        to <span class="font-medium">{{ $to ? \Carbon\Carbon::parse($to)->format('M d, Y') : 'today' }}</span>
+        <a href="{{ route('sales.index', array_filter(['status' => $status])) }}" class="underline text-slate-500">Show all dates</a>
+    </div>
+@endif
+
+<div class="flex flex-wrap gap-2 mb-4">
     @foreach ($tabs as $value => $label)
-        <a href="{{ route('sales.index', $value ? ['status' => $value] : []) }}"
+        <a href="{{ route('sales.index', ($value ? ['status' => $value] : []) + $range) }}"
            class="px-3 py-1.5 rounded-lg text-sm {{ $status === ($value ?: null) ? 'bg-slate-700 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50' }}">
             {{ $label }}
         </a>
@@ -57,9 +63,7 @@
                     <td class="px-4 py-3 text-right font-medium">₱{{ number_format($sale->total_amount, 2) }}</td>
                     <td class="px-4 py-3 text-slate-500">{{ $sale->dr_no }}</td>
                     <td class="px-4 py-3 text-center">
-                        <span class="px-2 py-1 rounded-full text-xs font-medium {{ $badge[$sale->status] }}">
-                            {{ ucfirst($sale->status) }}
-                        </span>
+                        <x-badge type="payment" :value="Badge::paymentStatus($sale->status, $sale->receivable?->due_date)" />
                     </td>
                     <td class="px-4 py-3 text-right">
                         <a href="{{ route('sales.show', $sale) }}" class="btn-action">View</a>
@@ -67,7 +71,9 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="8" class="px-4 py-8 text-center text-slate-400">No sales recorded yet.</td>
+                    <td colspan="8" class="px-4 py-8 text-center text-slate-400">
+                        {{ $status || $range ? 'No sales match this filter.' : 'No sales recorded yet.' }}
+                    </td>
                 </tr>
             @endforelse
         </tbody>
