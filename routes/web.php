@@ -104,6 +104,7 @@ Route::middleware('auth')->group(function () {
         Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
         Route::put('/users/{user}/password', [UserController::class, 'resetPassword'])->name('users.password');
         Route::patch('/users/{user}/status', [UserController::class, 'toggleStatus'])->name('users.status');
+        Route::patch('/repairs/{repair}/assign', [RepairJobController::class, 'assign'])->name('repairs.assign');
     });
 });
 

@@ -9,6 +9,57 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        /* ---- Status badge: one size, shape and palette everywhere ---- */
+        .sb { display: inline-flex; align-items: center; gap: .4rem; padding: .2rem .65rem; border-radius: 999px;
+              font-size: .75rem; font-weight: 600; line-height: 1.25rem; white-space: nowrap; border: 1px solid transparent; }
+        .sb-dot { width: .4rem; height: .4rem; border-radius: 999px; background: currentColor; display: inline-block; }
+        .sb-green  { background: #dcfce7; color: #166534; border-color: #bbf7d0; }
+        .sb-red    { background: #fee2e2; color: #991b1b; border-color: #fecaca; }
+        .sb-amber  { background: #fef3c7; color: #92400e; border-color: #fde68a; }
+        .sb-blue   { background: #dbeafe; color: #1e40af; border-color: #bfdbfe; }
+        .sb-violet { background: #ede9fe; color: #5b21b6; border-color: #ddd6fe; }
+        .sb-slate  { background: #f1f5f9; color: #334155; border-color: #e2e8f0; }
+        .sb-dark   { background: #334155; color: #fff; border-color: #334155; }
+
+        /* ---- Clickable KPI card ---- */
+        a.kpi { display: block; color: inherit; text-decoration: none; position: relative;
+                transition: border-color .15s, box-shadow .15s, transform .15s; }
+        a.kpi:hover { border-color: #64748b; box-shadow: 0 4px 14px rgba(15, 23, 42, .08); transform: translateY(-1px); }
+        a.kpi:focus-visible { outline: 2px solid #334155; outline-offset: 2px; }
+        a.kpi::after { content: '\2192'; position: absolute; top: .9rem; right: 1rem; color: #94a3b8; font-size: .95rem; }
+        a.kpi:hover::after { color: #334155; }
+        a.kpi.kpi-on { border-color: #334155; box-shadow: 0 0 0 1px #334155; }
+
+        /* ---- Filter chips (status tabs) ---- */
+        .chips { display: flex; flex-wrap: wrap; gap: .5rem; }
+        .chip { display: inline-flex; align-items: center; gap: .45rem; padding: .4rem .85rem; border-radius: 999px;
+                font-size: .8125rem; font-weight: 500; color: #475569; background: #fff; border: 1px solid #e2e8f0; text-decoration: none; }
+        .chip:hover { background: #f1f5f9; }
+        .chip.on { background: #334155; color: #fff; border-color: #334155; }
+        .chip small { font-size: .7rem; padding: 0 .4rem; border-radius: 999px; background: #e2e8f0; color: #475569; line-height: 1.1rem; }
+        .chip.on small { background: rgba(255, 255, 255, .22); color: #fff; }
+
+        /* ---- Confirmation dialog ---- */
+        .cf-back { position: fixed; inset: 0; z-index: 90; display: none; align-items: center; justify-content: center;
+                   padding: 1rem; background: rgba(15, 23, 42, .45); }
+        .cf-back.open { display: flex; }
+        .cf-box { width: 100%; max-width: 26rem; background: #fff; border-radius: 1rem; padding: 1.5rem;
+                  box-shadow: 0 20px 50px rgba(15, 23, 42, .25); }
+        .cf-icon { width: 2.75rem; height: 2.75rem; border-radius: 999px; display: flex; align-items: center; justify-content: center;
+                   font-size: 1.4rem; background: #fef3c7; color: #b45309; margin-bottom: .9rem; }
+        .cf-box.danger .cf-icon { background: #fee2e2; color: #b91c1c; }
+        .cf-title { font-size: 1.05rem; font-weight: 600; color: #0f172a; }
+        .cf-text { margin-top: .4rem; font-size: .9rem; color: #475569; line-height: 1.45; }
+        .cf-actions { display: flex; justify-content: flex-end; gap: .6rem; margin-top: 1.4rem; }
+        .cf-btn { padding: .55rem 1.1rem; border-radius: .6rem; font-size: .9rem; font-weight: 500; border: 0; cursor: pointer; }
+        .cf-cancel { background: #f1f5f9; color: #334155; }
+        .cf-cancel:hover { background: #e2e8f0; }
+        .cf-ok { background: #334155; color: #fff; }
+        .cf-ok:hover { background: #1e293b; }
+        .cf-box.danger .cf-ok { background: #dc2626; }
+        .cf-box.danger .cf-ok:hover { background: #b91c1c; }
+    </style>
     <script>
         // Apply the saved text size right away (before the page shows)
         try {
@@ -226,5 +277,64 @@
         </div>
     </main>
 </div>
+
+        /* ---- Confirmation dialog ---- */
+        .cf-back { position: fixed; inset: 0; z-index: 90; display: none; align-items: center; justify-content: center;
+                   padding: 1rem; background: rgba(15, 23, 42, .45); }
+        .cf-back.open { display: flex; }
+        .cf-box { width: 100%; max-width: 26rem; background: #fff; border-radius: 1rem; padding: 1.5rem;
+                  box-shadow: 0 20px 50px rgba(15, 23, 42, .25); }
+        .cf-icon { width: 2.75rem; height: 2.75rem; border-radius: 999px; display: flex; align-items: center; justify-content: center;
+                   font-size: 1.4rem; background: #fef3c7; color: #b45309; margin-bottom: .9rem; }
+        .cf-box.danger .cf-icon { background: #fee2e2; color: #b91c1c; }
+        .cf-title { font-size: 1.05rem; font-weight: 600; color: #0f172a; }
+        .cf-text { margin-top: .4rem; font-size: .9rem; color: #475569; line-height: 1.45; }
+        .cf-actions { display: flex; justify-content: flex-end; gap: .6rem; margin-top: 1.4rem; }
+        .cf-btn { padding: .55rem 1.1rem; border-radius: .6rem; font-size: .9rem; font-weight: 500; border: 0; cursor: pointer; }
+        .cf-cancel { background: #f1f5f9; color: #334155; }
+        .cf-cancel:hover { background: #e2e8f0; }
+        .cf-ok { background: #334155; color: #fff; }
+        .cf-ok:hover { background: #1e293b; }
+        .cf-box.danger .cf-ok { background: #dc2626; }
+        .cf-box.danger .cf-ok:hover { background: #b91c1c; }
+        </div>
+    </div>
+</div>
+<script>
+    (function () {
+        var back = document.getElementById('cf-back');
+        var box = document.getElementById('cf-box');
+        var pending = null;
+
+        function close() { back.classList.remove('open'); pending = null; }
+
+        document.addEventListener('submit', function (e) {
+            var form = e.target;
+            if (!form.dataset || !form.dataset.confirm || form.dataset.confirmed === '1') return;
+            e.preventDefault();
+            e.stopPropagation();
+            pending = { form: form, submitter: e.submitter || null };
+            document.getElementById('cf-title').textContent = form.dataset.confirmTitle || 'Please confirm';
+            document.getElementById('cf-text').textContent = form.dataset.confirm;
+            document.getElementById('cf-ok').textContent = form.dataset.confirmButton || 'Confirm';
+            box.classList.toggle('danger', form.dataset.confirmTone === 'danger');
+            back.classList.add('open');
+            document.getElementById('cf-ok').focus();
+        }, true);
+
+        document.getElementById('cf-ok').addEventListener('click', function () {
+            if (!pending) return;
+            var form = pending.form, submitter = pending.submitter;
+            form.dataset.confirmed = '1';
+            close();
+            if (form.requestSubmit) { form.requestSubmit(submitter && submitter.form === form ? submitter : undefined); }
+            else { form.submit(); }
+            setTimeout(function () { form.dataset.confirmed = ''; }, 0);
+        });
+        document.getElementById('cf-cancel').addEventListener('click', close);
+        back.addEventListener('click', function (e) { if (e.target === back) close(); });
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+    })();
+</script>
 </body>
 </html>
