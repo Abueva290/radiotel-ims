@@ -17,7 +17,9 @@
                         class="w-9 h-9 rounded-full border border-slate-200 text-slate-500 hover:bg-slate-50">✕</button>
             </div>
 
-            <form method="POST" action="{{ route('inventory.store') }}" class="px-4 sm:px-8 py-6">
+            <form method="POST" action="{{ route('inventory.store') }}" class="px-4 sm:px-8 py-6"
+                  x-data="{ serialized: {{ old('is_serialized') ? 'true' : 'false' }}, qty: {{ (int) old('stock_qty', 0) }}, serials: @js(old('serials', '')),
+                            count() { return [...new Set(this.serials.split(/[\n,]+/).map(s => s.trim()).filter(Boolean))].length } }">
                 @csrf
                 <input type="hidden" name="_form" value="add-product">
 
@@ -68,8 +70,35 @@
 
                         <div class="min-w-0">
                             <label class="block text-sm font-medium mb-1.5">Initial Stock</label>
-                            <input type="number" min="0" name="stock_qty" value="{{ old('stock_qty', 0) }}" class="{{ $input }}">
+                            <input type="number" min="0" name="stock_qty" x-model.number="qty" class="{{ $input }}">
                             @error('stock_qty') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div class="min-w-0">
+                            <label class="block text-sm font-medium mb-1.5">Warranty (months)</label>
+                            <input type="number" min="1" max="120" name="warranty_months" value="{{ old('warranty_months') }}"
+                                   placeholder="Blank = no warranty" class="{{ $input }}">
+                            @error('warranty_months') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <label class="flex items-start gap-2 text-sm">
+                                <input type="hidden" name="is_serialized" value="0">
+                                <input type="checkbox" name="is_serialized" value="1" x-model="serialized"
+                                       class="mt-0.5 rounded border-slate-300 text-slate-700 focus:ring-slate-500">
+                                <span>
+                                    <span class="font-medium">Track individual units by serial number</span>
+                                    <span class="block text-xs text-slate-400">For radios and equipment. Leave off for items counted by quantity only.</span>
+                                </span>
+                            </label>
+                        </div>
+
+                        <div class="sm:col-span-2" x-show="serialized && qty > 0" x-transition>
+                            <label class="block text-sm font-medium mb-1.5">Serial Numbers <span class="font-normal text-slate-400">(one per line)</span></label>
+                            <textarea name="serials" rows="3" x-model="serials" class="{{ $input }} font-mono uppercase"></textarea>
+                            <p class="text-xs mt-1" :class="count() === qty ? 'text-green-700' : 'text-slate-400'"
+                               x-text="count() + ' of ' + qty + ' serial number(s) entered'"></p>
+                            @error('serials') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
                         </div>
                     </div>
                 </div>

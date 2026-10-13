@@ -1,8 +1,8 @@
 <table class="cards">
     <tr>
-        <td><div class="label">Total SKUs</div><div class="value">{{ $totals['count'] }}</div></td>
-        <td><div class="label">Low / Out of Stock</div><div class="value">{{ $totals['low'] }}</div></td>
-        <td><div class="label">Inventory Value (at cost)</div><div class="value">{{ $peso($totals['value']) }}</div></td>
+        @include('reports.partials._card', ['label' => 'Total SKUs', 'value' => $totals['count'], 'url' => route('inventory.index')])
+        @include('reports.partials._card', ['label' => 'Low / Out of Stock', 'value' => $totals['low'], 'url' => route('inventory.index', ['stock' => 'low'])])
+        @include('reports.partials._card', ['label' => 'Inventory Value (at cost)', 'value' => $peso($totals['value']), 'url' => route('inventory.index')])
         <td><div class="label">Movements Period</div><div class="value" style="font-size: 12px;">{{ $from->format('M d') }} – {{ $to->format('M d, Y') }}</div></td>
     </tr>
 </table>
@@ -21,8 +21,6 @@
         @foreach ($rows as $p)
             @php
                 $m = $moves[$p->id] ?? null;
-                $state = $p->stockStatus();
-                $cls = ['In Stock' => 't-green', 'Low Stock' => 't-amber', 'Out of Stock' => 't-red'][$state];
             @endphp
             <tr>
                 <td>P{{ str_pad($p->id, 3, '0', STR_PAD_LEFT) }}</td>
@@ -36,7 +34,7 @@
                 <td class="c">{{ $p->reorder_level }}</td>
                 <td class="r">{{ $peso($p->unit_cost) }}</td>
                 <td class="r">{{ $peso($p->stock_qty * $p->unit_cost) }}</td>
-                <td class="c"><span class="tag {{ $cls }}">{{ $state }}</span></td>
+                <td class="c">{!! \App\Support\Badge::tag('stock', $p->stockStatus()) !!}</td>
             </tr>
         @endforeach
     </tbody>

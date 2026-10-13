@@ -2,6 +2,9 @@
     $input = 'w-full rounded-lg border-slate-300 text-[15px] py-2 px-3 focus:border-slate-500 focus:ring-slate-500';
     $productData = $products->map(fn ($p) => [
         'id' => $p->id, 'name' => $p->name, 'price' => (float) $p->selling_price, 'stock' => $p->stock_qty,
+        'serialized' => (bool) $p->is_serialized,
+        'units' => $p->is_serialized ? $p->units->map(fn ($u) => ['id' => $u->id, 'serial' => $u->serial_no])->values() : [],
+        'warranty' => $p->warrantyLabel(),
     ])->values();
     $isThisForm = old('_form') === 'add-sale';
     $oldItems = $isThisForm ? array_values(old('items', [])) : [];
@@ -31,7 +34,10 @@
             </div>
 
             <form method="POST" action="{{ route('sales.store') }}" class="px-4 sm:px-8 py-6"
-                  x-data="saleForm(@js($productData), @js($oldItems))">
+                  x-data="saleForm(@js($productData), @js($oldItems))"
+                  :data-confirm="`Save this sale for ${peso(total())}?\n\nStock will be deducted for every item and a receivable will be created for the customer.`"
+                  data-confirm-title="Save sale"
+                  data-confirm-button="Yes, save sale">
                 @csrf
                 <input type="hidden" name="_form" value="add-sale">
 
@@ -101,8 +107,8 @@
                                     <th></th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <template x-for="(row, i) in rows" :key="i">
+                            <template x-for="(row, i) in rows" :key="i">
+                                <tbody>
                                     <tr class="border-b border-slate-50">
                                         <td class="py-2 pr-3">
                                             <select :name="`items[${i}][product_id]`" x-model.number="row.product_id"
@@ -116,6 +122,8 @@
                                         <td class="py-2 text-center text-slate-500" x-text="stockOf(row.product_id)"></td>
                                         <td class="py-2 px-2">
                                             <input type="number" min="1" :name="`items[${i}][quantity]`" x-model.number="row.quantity"
+                                                   :readonly="isSerialized(row.product_id)"
+                                                   :class="isSerialized(row.product_id) ? 'bg-slate-50' : ''"
                                                    class="{{ $input }} text-center">
                                         </td>
                                         <td class="py-2 px-2">
@@ -128,8 +136,31 @@
                                                     class="text-red-500 hover:underline" x-show="rows.length > 1">✕</button>
                                         </td>
                                     </tr>
-                                </template>
-                            </tbody>
+                                    {{-- Serial-tracked product: pick the exact units being sold --}}
+                                    <tr x-show="isSerialized(row.product_id)" class="border-b border-slate-50">
+                                        <td colspan="6" class="pb-3">
+                                            <div class="rounded-lg bg-slate-50 p-3">
+                                                <p class="text-xs font-medium text-slate-600 mb-2">
+                                                    Select the serial numbers being sold
+                                                    <span class="font-normal text-slate-400" x-text="warrantyOf(row.product_id) ? '· Warranty ' + warrantyOf(row.product_id) + ' from sale date' : '· No warranty'"></span>
+                                                </p>
+                                                <div class="flex flex-wrap gap-2">
+                                                    <template x-for="u in unitsOf(row.product_id)" :key="u.id">
+                                                        <label class="inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-2 py-1 text-xs font-mono cursor-pointer"
+                                                               :class="row.unit_ids.includes(u.id) ? 'border-slate-700 ring-1 ring-slate-700' : ''">
+                                                            <input type="checkbox" :name="`items[${i}][unit_ids][]`" :value="u.id"
+                                                                   :checked="row.unit_ids.includes(u.id)" @change="toggleUnit(i, u.id)"
+                                                                   class="rounded border-slate-300 text-slate-700 focus:ring-slate-500">
+                                                            <span x-text="u.serial"></span>
+                                                        </label>
+                                                    </template>
+                                                    <p x-show="!unitsOf(row.product_id).length" class="text-xs text-red-600">No serial-numbered units in stock. Record serial numbers in Inventory first.</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </template>
                         </table>
                     </div>
 
@@ -152,11 +183,12 @@
 
 <script>
     function saleForm(products, oldItems = []) {
-        const blank = () => ({ product_id: '', quantity: 1, unit_price: 0 });
+        const blank = () => ({ product_id: '', quantity: 1, unit_price: 0, unit_ids: [] });
         const restored = (oldItems || []).map(r => ({
             product_id: r.product_id ? Number(r.product_id) : '',
             quantity: Number(r.quantity) || 1,
             unit_price: Number(r.unit_price) || 0,
+            unit_ids: (r.unit_ids || []).map(Number),
         }));
 
         return {
@@ -174,6 +206,22 @@
             onProductChange(i) {
                 const p = this.find(this.rows[i].product_id);
                 if (p) this.rows[i].unit_price = p.price;
+                this.rows[i].unit_ids = [];
+                if (p && p.serialized) this.rows[i].quantity = 0;
+            },
+            isSerialized(id) {
+                return !!(id && this.find(id)?.serialized);
+            },
+            unitsOf(id) {
+                return id ? (this.find(id)?.units || []) : [];
+            },
+            warrantyOf(id) {
+                return id ? this.find(id)?.warranty : null;
+            },
+            toggleUnit(i, unitId) {
+                const row = this.rows[i];
+                row.unit_ids = row.unit_ids.includes(unitId) ? row.unit_ids.filter(x => x !== unitId) : [...row.unit_ids, unitId];
+                row.quantity = row.unit_ids.length;
             },
             total() {
                 return this.rows.reduce((sum, r) => sum + (r.quantity * r.unit_price || 0), 0);

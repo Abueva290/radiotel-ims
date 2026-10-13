@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\FactoryDefectController;
 use App\Http\Controllers\AuditTrailController;
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\CustomerController;
@@ -68,16 +69,44 @@ Route::middleware('auth')->group(function () {
         Route::get('/inventory/{product}/edit', [ProductController::class, 'edit'])->name('inventory.edit');
         Route::put('/inventory/{product}', [ProductController::class, 'update'])->name('inventory.update');
         Route::post('/inventory/{product}/movement', [ProductController::class, 'storeMovement'])->name('inventory.movement');
+        // Record serial numbers for stock that is already on hand
+        Route::post('/inventory/{product}/units', [ProductController::class, 'storeUnits'])->name('inventory.units');
     });
 
     // Technical Head + Technician + Admin
     Route::middleware('role:admin,technical_head,technician')->group(function () {
         Route::get('/repairs', [RepairJobController::class, 'index'])->name('repairs.index');
         Route::get('/repairs/create', [RepairJobController::class, 'create'])->name('repairs.create');
+        Route::get('/repairs/serial-lookup', [RepairJobController::class, 'serialLookup'])->name('repairs.serial-lookup');
+        Route::get('/repairs/serial-lookup', [RepairJobController::class, 'serialLookup'])->name('repairs.serial-lookup');
         Route::post('/repairs', [RepairJobController::class, 'store'])->name('repairs.store');
         Route::get('/repairs/{repair}', [RepairJobController::class, 'show'])->name('repairs.show');
         Route::post('/repairs/{repair}/parts', [RepairJobController::class, 'storePart'])->name('repairs.parts');
+        Route::post('/repairs/{repair}/units', [RepairJobController::class, 'storeUnits'])->name('repairs.units');
         Route::patch('/repairs/{repair}/status', [RepairJobController::class, 'updateStatus'])->name('repairs.status');
+        Route::post('/repairs/{repair}/units', [RepairJobController::class, 'storeUnits'])->name('repairs.units');
+
+        // Assigning / reassigning a job: Technical Head + Operational Manager only
+        Route::post('/repairs/{repair}/assign', [RepairJobController::class, 'assign'])
+            ->middleware('role:admin,technical_head')
+            ->name('repairs.assign');
+
+        // Assigning / reassigning a job: Technical Head + Operational Manager only
+        Route::post('/repairs/{repair}/assign', [RepairJobController::class, 'assign'])
+            ->middleware('role:admin,technical_head')
+            ->name('repairs.assign');
+    });
+
+    // Factory defects: anyone who handles stock or repairs can report;
+    // inspection and status updates are Technical Head + Operational Manager only
+    Route::middleware('role:admin,technical_head,technician,staff')->group(function () {
+        Route::get('/defects', [FactoryDefectController::class, 'index'])->name('defects.index');
+        Route::get('/defects/create', [FactoryDefectController::class, 'create'])->name('defects.create');
+        Route::post('/defects', [FactoryDefectController::class, 'store'])->name('defects.store');
+        Route::get('/defects/{defect}', [FactoryDefectController::class, 'show'])->name('defects.show');
+        Route::patch('/defects/{defect}/status', [FactoryDefectController::class, 'updateStatus'])
+            ->middleware('role:admin,technical_head')
+            ->name('defects.status');
     });
 
     // Admin only

@@ -16,18 +16,31 @@ class PayableController extends Controller
     {
         $supplierId = $request->integer('supplier') ?: null;
 
+        // Due-date sort: asc = nearest due date first. Settled invoices always stay at the bottom.
+        $sort = $request->input('sort') === 'desc' ? 'desc' : 'asc';
+
+        // Filters behind the summary cards: overdue = unpaid and past due; due_soon = unpaid, due today to 14 days from now
+        $filter = in_array($request->input('filter'), ['overdue', 'due_soon'], true) ? $request->input('filter') : null;
+        $dueSoon = fn ($q) => $q->where('status', '!=', 'paid')
+            ->whereDate('due_date', '>=', today())
+            ->whereDate('due_date', '<=', today()->addDays(14));
+
         $invoices = SupplierInvoice::with('supplier')
             ->when($supplierId, fn ($q) => $q->where('supplier_id', $supplierId))
-            ->orderByRaw("FIELD(status, 'unpaid', 'partial', 'paid')")
-            ->orderBy('due_date')
+            ->when($filter === 'overdue', fn ($q) => $q->overdue())
+            ->when($filter === 'due_soon', $dueSoon)
+            ->orderByRaw("status = 'paid'")
+            ->orderBy('due_date', $sort)
+            ->orderBy('id')
             ->get();
 
         $stats = [
             'total'   => SupplierInvoice::sum('balance'),
             'overdue' => SupplierInvoice::overdue()->sum('balance'),
-            'due_soon' => SupplierInvoice::where('status', '!=', 'paid')
-                ->whereBetween('due_date', [now(), now()->addDays(14)])
-                ->sum('balance'),
+            'overdue_count' => SupplierInvoice::overdue()->count(),
+            'due_soon' => SupplierInvoice::where($dueSoon)->sum('balance'),
+            'due_soon_count' => SupplierInvoice::where($dueSoon)->count(),
+            'open_count' => SupplierInvoice::where('status', '!=', 'paid')->count(),
         ];
 
         // Per supplier: what is owed, how much is overdue, how many invoices are open, and the next due date
@@ -56,6 +69,8 @@ class PayableController extends Controller
             'suppliers'     => $suppliers, // alphabetical, used by the Record Invoice form
             'supplierCards' => $suppliers->sortBy([['state_rank', 'asc'], ['outstanding', 'desc']])->values(),
             'selected'      => $supplierId ? $suppliers->firstWhere('id', $supplierId) : null,
+            'sort'          => $sort,
+            'filter'        => $filter,
         ]);
     }
 

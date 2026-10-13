@@ -1,11 +1,10 @@
-@php $status = ['unpaid' => 't-red', 'partial' => 't-amber', 'paid' => 't-green']; @endphp
-
 <table class="cards">
     <tr>
-        <td><div class="label">Transactions</div><div class="value">{{ $totals['count'] }}</div></td>
-        <td><div class="label">Total Sales</div><div class="value">{{ $peso($totals['amount']) }}</div></td>
-        <td><div class="label">Collected</div><div class="value">{{ $peso($totals['amount'] - $totals['outstanding']) }}</div></td>
-        <td><div class="label">Outstanding</div><div class="value">{{ $peso($totals['outstanding']) }}</div></td>
+        @php $period = ['from' => $from->toDateString(), 'to' => $to->toDateString()]; @endphp
+        @include('reports.partials._card', ['label' => 'Transactions', 'value' => $totals['count'], 'url' => route('sales.index', $period)])
+        @include('reports.partials._card', ['label' => 'Total Sales', 'value' => $peso($totals['amount']), 'url' => route('sales.index', $period)])
+        @include('reports.partials._card', ['label' => 'Collected', 'value' => $peso($totals['amount'] - $totals['outstanding']), 'url' => route('sales.index', $period)])
+        @include('reports.partials._card', ['label' => 'Outstanding', 'value' => $peso($totals['outstanding']), 'url' => route('sales.index', $period + ['status' => 'outstanding'])])
     </tr>
 </table>
 
@@ -26,7 +25,7 @@
                 <td>{{ $sale->customer->name }}</td>
                 <td class="r">{{ $peso($sale->total_amount) }}</td>
                 <td class="r">{{ $peso($sale->receivable?->balance ?? 0) }}</td>
-                <td class="c"><span class="tag {{ $status[$sale->status] }}">{{ ucfirst($sale->status) }}</span></td>
+                <td class="c">{!! \App\Support\Badge::tag('payment', \App\Support\Badge::paymentStatus($sale->status, $sale->receivable?->due_date)) !!}</td>
             </tr>
         @empty
             <tr><td colspan="7" class="empty">No sales in this period.</td></tr>

@@ -52,4 +52,20 @@ class Sale extends Model
     {
         return $this->hasOne(Receivable::class);
     }
+        /**
+     * Filters for the Sales page (also used by the dashboard KPI link).
+     * "overdue" = not fully paid and the receivable is past its due date.
+     */
+    public function scopeFilter($query, array $f)
+    {
+        $status = $f['status'] ?? null;
+
+        return $query
+            ->when($status === 'overdue', fn ($q) => $q->where('status', '!=', 'paid')
+                ->whereHas('receivable', fn ($r) => $r->whereDate('due_date', '<', today())))
+            ->when($status === 'outstanding', fn ($q) => $q->where('status', '!=', 'paid'))
+            ->when($status && ! in_array($status, ['overdue', 'outstanding'], true), fn ($q) => $q->where('status', $status))
+            ->when($f['from'] ?? null, fn ($q, $v) => $q->whereDate('sale_date', '>=', $v))
+            ->when($f['to'] ?? null, fn ($q, $v) => $q->whereDate('sale_date', '<=', $v));
+    }
 }

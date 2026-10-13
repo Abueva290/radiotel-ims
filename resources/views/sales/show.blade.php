@@ -3,13 +3,7 @@
 @section('title', 'Sale Details')
 
 @section('content')
-@php
-    $badge = [
-        'unpaid'  => 'bg-red-100 text-red-700',
-        'partial' => 'bg-amber-100 text-amber-700',
-        'paid'    => 'bg-green-100 text-green-700',
-    ];
-@endphp
+@php use App\Support\Badge; @endphp
 
 <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
     <div>
@@ -45,7 +39,22 @@
             <tbody>
                 @foreach ($sale->items as $item)
                     <tr class="border-b border-slate-50">
-                        <td class="py-3">{{ $item->product->name }}</td>
+                        <td class="py-3">
+                            {{ $item->product->name }}
+                            @if ($item->units->isNotEmpty())
+                                <span class="block mt-1 space-y-1">
+                                    @foreach ($item->units as $unit)
+                                        <span class="flex flex-wrap items-center gap-2 text-xs">
+                                            <span class="font-mono text-slate-600">SN {{ $unit->serial_no }}</span>
+                                            <x-badge type="warranty" :value="$unit->warrantyStatus()" />
+                                            @if ($unit->warranty_end)
+                                                <span class="text-slate-400">until {{ $unit->warranty_end->format('M d, Y') }}</span>
+                                            @endif
+                                        </span>
+                                    @endforeach
+                                </span>
+                            @endif
+                        </td>
                         <td class="py-3 text-center">{{ $item->quantity }}</td>
                         <td class="py-3 text-right">₱{{ number_format($item->unit_price, 2) }}</td>
                         <td class="py-3 text-right font-medium">₱{{ number_format($item->subtotal, 2) }}</td>
@@ -69,7 +78,7 @@
                 <div class="flex justify-between"><dt class="text-slate-500">Recorded by</dt><dd>{{ $sale->creator->name }}</dd></div>
                 <div class="flex justify-between">
                     <dt class="text-slate-500">Status</dt>
-                    <dd><span class="px-2 py-0.5 rounded-full text-xs font-medium {{ $badge[$sale->status] }}">{{ ucfirst($sale->status) }}</span></dd>
+                    <dd><x-badge type="payment" :value="Badge::paymentStatus($sale->status, $sale->receivable?->due_date)" /></dd>
                 </div>
             </dl>
         </div>

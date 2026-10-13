@@ -69,7 +69,7 @@
                     <td class="px-4 py-3 whitespace-nowrap">
                         {{ $backup['date']->format('M d, Y h:i A') }}
                         @if ($loop->first)
-                            <span class="ml-2 px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">Latest</span>
+                            <x-badge tone="green" class="ml-2">Latest</x-badge>
                         @endif
                     </td>
                     <td class="px-4 py-3 text-slate-500">{{ $backup['name'] }}</td>

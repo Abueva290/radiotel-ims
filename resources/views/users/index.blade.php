@@ -66,23 +66,22 @@
                         </div>
                     </td>
                     <td class="px-4 py-3">
-                        <span class="px-2 py-1 rounded text-xs font-medium whitespace-nowrap {{ $roleBadge[$u->role] }}">
-                            {{ \App\Models\User::ROLES[$u->role] }}
-                        </span>
+                        <x-badge type="role" :value="$u->role" />
                     </td>
                     <td class="px-4 py-3 text-slate-500">{{ $u->email }}</td>
                     <td class="px-4 py-3 text-slate-500">{{ $u->last_login_at?->format('Y-m-d h:i A') ?? 'Never' }}</td>
                     <td class="px-4 py-3 text-center">
-                        <span class="px-2 py-1 rounded-full text-xs font-medium {{ $u->isActive() ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
-                            {{ ucfirst($u->status) }}
-                        </span>
+                        <x-badge type="account" :value="$u->status" />
                     </td>
                     <td class="px-4 py-3 text-right">
                         <div class="inline-flex gap-2">
                             <a href="{{ route('users.edit', $u) }}" class="btn-action">Edit</a>
                             @unless ($u->is(auth()->user()))
                                 <form method="POST" action="{{ route('users.status', $u) }}"
-                                      onsubmit="return confirm(@js(($u->isActive() ? 'Disable ' : 'Enable ') . $u->name . '?'))">
+                                      data-confirm="{{ $u->isActive() ? 'Disable ' . $u->name . '? They will no longer be able to sign in.' : 'Enable ' . $u->name . '? They will be able to sign in again.' }}"
+                                      data-confirm-title="{{ $u->isActive() ? 'Disable account' : 'Enable account' }}"
+                                      data-confirm-button="{{ $u->isActive() ? 'Yes, disable' : 'Yes, enable' }}"
+                                      data-confirm-tone="{{ $u->isActive() ? 'danger' : 'primary' }}">
                                     @csrf
                                     @method('PATCH')
                                     <button class="{{ $u->isActive() ? 'btn-action-warning' : 'btn-action-success' }}">

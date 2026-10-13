@@ -10,7 +10,7 @@
     <p class="text-sm text-slate-500 mb-6">
         {{ $supplier->invoices_count }} invoice(s)
         @if ($supplier->isArchived())
-            <span class="ml-2 px-2 py-0.5 rounded-full text-xs bg-amber-100 text-amber-700">Archived</span>
+            <x-badge type="record" value="archived" class="ml-2" />
         @endif
     </p>
 

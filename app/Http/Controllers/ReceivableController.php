@@ -10,11 +10,19 @@ use Illuminate\Validation\ValidationException;
 
 class ReceivableController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        // Due-date sort: asc = nearest due date first. Settled items always stay at the bottom.
+        $sort = $request->input('sort') === 'desc' ? 'desc' : 'asc';
+        // Filters behind the summary cards: overdue = unpaid and past due; current = unpaid, not yet due
+        $filter = in_array($request->input('filter'), ['overdue', 'current'], true) ? $request->input('filter') : null;
+
         $receivables = Receivable::with('customer', 'sale', 'repairJob')
-            ->orderByRaw("FIELD(status, 'unpaid', 'partial', 'paid')")
-            ->orderBy('due_date')
+            ->when($filter === 'overdue', fn ($q) => $q->overdue())
+            ->when($filter === 'current', fn ($q) => $q->where('status', '!=', 'paid')->whereDate('due_date', '>=', today()))
+            ->orderByRaw("status = 'paid'")
+            ->orderBy('due_date', $sort)
+            ->orderBy('id')
             ->get();
 
         $stats = [
@@ -23,6 +31,7 @@ class ReceivableController extends Controller
             'overdue_count' => Receivable::overdue()->count(),
         ];
         $stats['current'] = $stats['total'] - $stats['overdue'];
+        $stats['current_count'] = Receivable::where('status', '!=', 'paid')->whereDate('due_date', '>=', today())->count();
 
         $recent = ReceivablePayment::with('receivable.customer', 'receiver')
             ->latest('payment_date')
@@ -30,7 +39,7 @@ class ReceivableController extends Controller
             ->take(5)
             ->get();
 
-        return view('receivables.index', compact('receivables', 'stats', 'recent'));
+        return view('receivables.index', compact('receivables', 'stats', 'recent', 'sort', 'filter'));
     }
 
     public function show(Receivable $receivable)

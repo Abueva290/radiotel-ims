@@ -25,4 +25,9 @@ class SaleItem extends Model
     {
         return $this->belongsTo(Product::class);
     }
+        /** Serial-numbered units sold on this line. */
+    public function units()
+    {
+        return $this->hasMany(ProductUnit::class);
+    }
 }

@@ -21,6 +21,7 @@
         'customers'         => fn ($id) => route('customers.edit', $id),
         'suppliers'         => fn ($id) => route('suppliers.edit', $id),
         'users'             => fn ($id) => route('users.edit', $id),
+        'factory_defects'   => fn ($id) => route('defects.show', $id),
     ];
     $hasFilters = collect($filters)->filter()->isNotEmpty();
 @endphp
@@ -95,9 +96,7 @@
                     <td class="px-4 py-3 text-slate-500 whitespace-nowrap">{{ $log->created_at->format('M d, Y h:i:s A') }}</td>
                     <td class="px-4 py-3">{{ $log->user?->name ?? 'System' }}</td>
                     <td class="px-4 py-3 text-center">
-                        <span class="px-2 py-1 rounded-full text-xs font-medium {{ $actionBadge[$log->action] ?? 'bg-slate-100 text-slate-700' }}">
-                            {{ ucfirst($log->action) }}
-                        </span>
+                        <x-badge type="audit" :value="$log->action" />
                     </td>
                     <td class="px-4 py-3">{{ $tables[$log->table_affected] ?? $log->table_affected }}</td>
                     <td class="px-4 py-3">

@@ -5,11 +5,6 @@
 @section('content')
 @php
     $input = 'w-full rounded-lg border-slate-300 text-sm focus:border-slate-500 focus:ring-slate-500';
-    $badge = [
-        'unpaid'  => 'bg-red-100 text-red-700',
-        'partial' => 'bg-amber-100 text-amber-700',
-        'paid'    => 'bg-green-100 text-green-700',
-    ];
 @endphp
 
 <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
@@ -41,7 +36,7 @@
                 </div>
             </div>
             <div class="flex justify-center mt-4">
-                <span class="px-3 py-1 rounded-full text-xs font-medium {{ $badge[$invoice->status] }}">{{ ucfirst($invoice->status) }}</span>
+                <x-badge type="payment" :value="\App\Support\Badge::paymentStatus($invoice->status, $invoice->due_date)" size="md" />
             </div>
         </div>
 
@@ -84,7 +79,11 @@
             {{-- Only the Operational Manager (admin) records supplier payments --}}
             @if (auth()->user()->hasRole('admin'))
             <form method="POST" action="{{ route('payables.payment', $invoice) }}"
-                  class="bg-white rounded-xl border border-slate-200 p-6">
+                  class="bg-white rounded-xl border border-slate-200 p-6"
+                  x-data="{ amt: '{{ old('amount_paid') }}' }"
+                  :data-confirm="`Record a payment of ₱${Number(amt || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })} to {{ e(addslashes($invoice->supplier->name)) }} for invoice {{ e(addslashes($invoice->invoice_no)) }}?\n\nOutstanding after this payment: ₱${Math.max(0, {{ (float) $invoice->balance }} - Number(amt || 0)).toLocaleString('en-PH', { minimumFractionDigits: 2 })}. Payments cannot be edited once recorded.`"
+                  data-confirm-title="Record supplier payment"
+                  data-confirm-button="Yes, record payment">
                 @csrf
                 <h2 class="font-semibold">Record Payment</h2>
                 <p class="text-sm text-slate-500 mb-4">
@@ -92,7 +91,7 @@
                 </p>
 
                 <label class="block text-sm font-medium mb-1">Amount Paid (₱)</label>
-                <input type="number" step="0.01" name="amount_paid" value="{{ old('amount_paid') }}" class="{{ $input }}">
+                <input type="number" step="0.01" min="0.01" max="{{ $invoice->balance }}" name="amount_paid" x-model="amt" required class="{{ $input }}">
                 @error('amount_paid') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
 
                 <label class="block text-sm font-medium mb-1 mt-3">Payment Method</label>
