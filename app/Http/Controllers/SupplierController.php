@@ -84,11 +84,13 @@ class SupplierController extends Controller
                 'required', 'string', 'max:255',
                 Rule::unique('suppliers', 'name')->ignore($supplier),
             ],
-            'contact_person'    => 'nullable|string|max:255',
-            'phone'             => 'nullable|string|max:30',
+            'contact_person'    => ['nullable', 'string', 'max:100', "regex:/^[\p{L}\s.'\-]+$/u"],
+            'phone'             => ['nullable', 'string', 'max:20', 'regex:/^[0-9+()\- ]+$/'],
             'credit_terms_days' => 'required|integer|min:0|max:365',
         ], [
             'name.unique' => 'A supplier with this name already exists.',
+            'contact_person.regex' => 'Contact person may contain letters only (no numbers).',
+            'phone.regex' => 'Phone may contain numbers only (you can also use + ( ) - and spaces).',
         ]);
     }
 }

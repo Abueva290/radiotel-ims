@@ -86,11 +86,13 @@ class CustomerController extends Controller
                 'required', 'string', 'max:255',
                 Rule::unique('customers', 'name')->ignore($customer),
             ],
-            'contact_person' => 'nullable|string|max:255',
-            'phone'          => 'nullable|string|max:30',
+            'contact_person' => ['nullable', 'string', 'max:100', "regex:/^[\p{L}\s.'\-]+$/u"],
+            'phone'          => ['nullable', 'string', 'max:20', 'regex:/^[0-9+()\- ]+$/'],
             'address'        => 'nullable|string|max:255',
         ], [
             'name.unique' => 'A customer with this name already exists.',
+            'contact_person.regex' => 'Contact person may contain letters only (no numbers).',
+            'phone.regex' => 'Phone may contain numbers only (you can also use + ( ) - and spaces).',
         ]);
     }
 }

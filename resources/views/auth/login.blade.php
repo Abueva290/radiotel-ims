@@ -99,15 +99,15 @@
         /* minimal "RT" letter-mark: R in white, T in a green-to-blue gradient, signal arcs in sky blue */
         .lg-mark {
             position: relative;
-            width: 100%; height: auto; aspect-ratio: 5 / 4;
+            width: 100%; height: auto; aspect-ratio: 1;
             overflow: visible;
             filter: drop-shadow(0 14px 34px rgba(52, 211, 153, .30));
         }
         .lg-mark path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
-        .lg-mark .r   { stroke: #fff; stroke-width: 27; }
-        .lg-mark .t   { stroke: url(#lg-grad); stroke-width: 27; }
-        .lg-mark .dot { fill: #38bdf8; transform-box: fill-box; transform-origin: center; animation: lg-pop .5s .8s cubic-bezier(.3,1.6,.5,1) both; }
-        @keyframes lg-pop { from { transform: scale(0); } to { transform: scale(1); } }
+        .lg-mark .r   { stroke: #fff; stroke-width: 15; }
+        .lg-mark .t   { stroke: url(#lg-grad); stroke-width: 15; }
+        .lg-mark .arc { stroke: #38bdf8; stroke-width: 7; }
+        .lg-mark .arc.two { stroke: #6ee7b7; opacity: .85; }
         .lg-mark .draw { stroke-dasharray: 1; stroke-dashoffset: 1; animation: lg-draw .9s cubic-bezier(.6, .1, .2, 1) forwards; }
         .lg-mark .d2 { animation-delay: .25s; }
         .lg-mark .d3 { animation-delay: .5s; }
@@ -353,22 +353,23 @@
             <div class="lg-orbit">
                 <div class="sq c"></div><div class="sq b"></div><div class="sq a"></div><div class="ring"></div>
                 <div class="lg-orbit-glow"></div>
-                <svg class="lg-mark" viewBox="22 14 200 160" role="img" aria-label="Radiotel RT">
+                <svg class="lg-mark" viewBox="34 6 160 160" role="img" aria-label="Radiotel RT">
                     <defs>
-                        <linearGradient id="lg-grad" gradientUnits="userSpaceOnUse" x1="124" y1="40" x2="176" y2="152">
+                        <linearGradient id="lg-grad" gradientUnits="userSpaceOnUse" x1="104" y1="40" x2="172" y2="152">
                             <stop offset="0" stop-color="#6ee7b7"/>
                             <stop offset="1" stop-color="#38bdf8"/>
                         </linearGradient>
                     </defs>
-                    {{-- R: heavy stem, bowl and leg --}}
-                    <path class="r draw" pathLength="1" d="M50 40V152"/>
-                    <path class="r draw d2" pathLength="1" d="M50 40h28a27 27 0 0 1 0 54H50"/>
-                    <path class="r draw d3" pathLength="1" d="M82 94l26 58"/>
-                    {{-- T: heavy bar and stem --}}
-                    <path class="t draw d2" pathLength="1" d="M124 40h52"/>
-                    <path class="t draw d3" pathLength="1" d="M150 40v112"/>
-                    {{-- signal dot at the end of the T bar --}}
-                    <circle class="dot draw-pop" cx="206" cy="40" r="13"/>
+                    {{-- R: stem, bowl and leg --}}
+                    <path class="r draw" pathLength="1" d="M58 152V56"/>
+                    <path class="r draw d2" pathLength="1" d="M58 56h26a24 24 0 0 1 0 48H58"/>
+                    <path class="r draw d3" pathLength="1" d="M82 104l28 48"/>
+                    {{-- T: bar and stem, leaning into the R --}}
+                    <path class="t draw d2" pathLength="1" d="M104 40h68"/>
+                    <path class="t draw d3" pathLength="1" d="M138 40v112"/>
+                    {{-- signal arcs from the end of the T bar --}}
+                    <path class="arc draw d4" pathLength="1" d="M176 28a16 16 0 0 1 16 16"/>
+                    <path class="arc two draw d4" pathLength="1" d="M176 12a32 32 0 0 1 32 32"/>
                 </svg>
             </div>
             <div class="lg-pill"></div>

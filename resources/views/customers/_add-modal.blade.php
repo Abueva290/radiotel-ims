@@ -35,13 +35,13 @@
 
                         <div class="min-w-0">
                             <label class="block text-sm font-medium mb-1.5">Contact Person</label>
-                            <input type="text" name="contact_person" value="{{ old('contact_person') }}" class="{{ $input }}">
+                            <input type="text" maxlength="100" placeholder="e.g. Juan Dela Cruz" oninput="this.value=this.value.replace(/[^\p{L}\s.'\-]/gu,'')" name="contact_person" value="{{ old('contact_person') }}" class="{{ $input }}">
                             @error('contact_person') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
                         </div>
 
                         <div class="min-w-0">
                             <label class="block text-sm font-medium mb-1.5">Phone</label>
-                            <input type="text" name="phone" value="{{ old('phone') }}" class="{{ $input }}">
+                            <input type="tel" inputmode="tel" maxlength="20" pattern="[0-9+()\- ]*" placeholder="e.g. 0917 123 4567" oninput="this.value=this.value.replace(/[^0-9+()\- ]/g,'')" name="phone" value="{{ old('phone') }}" class="{{ $input }}">
                             @error('phone') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
                         </div>
 
