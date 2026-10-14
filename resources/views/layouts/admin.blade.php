@@ -113,7 +113,6 @@
             ['label' => 'Suppliers',        'icon' => 'truck',            'route' => 'suppliers.index',   'roles' => ['admin', 'secretary']],
             ['label' => 'Inventory',        'icon' => 'package',          'route' => 'inventory.index',   'roles' => ['admin', 'staff']],
             ['label' => 'Repair & Service', 'icon' => 'tool',             'route' => 'repairs.index',     'roles' => ['admin', 'technical_head', 'technician']],
-            ['label' => 'Factory Defects',  'icon' => 'alert-octagon',    'route' => 'defects.index',     'roles' => ['admin', 'technical_head', 'technician', 'staff']],
         ],
         'Finance' => [
             ['label' => 'Receivables',      'icon' => 'cash',             'route' => 'receivables.index', 'roles' => ['admin', 'secretary']],
@@ -279,25 +278,15 @@
     </main>
 </div>
 
-        /* ---- Confirmation dialog ---- */
-        .cf-back { position: fixed; inset: 0; z-index: 90; display: none; align-items: center; justify-content: center;
-                   padding: 1rem; background: rgba(15, 23, 42, .45); }
-        .cf-back.open { display: flex; }
-        .cf-box { width: 100%; max-width: 26rem; background: #fff; border-radius: 1rem; padding: 1.5rem;
-                  box-shadow: 0 20px 50px rgba(15, 23, 42, .25); }
-        .cf-icon { width: 2.75rem; height: 2.75rem; border-radius: 999px; display: flex; align-items: center; justify-content: center;
-                   font-size: 1.4rem; background: #fef3c7; color: #b45309; margin-bottom: .9rem; }
-        .cf-box.danger .cf-icon { background: #fee2e2; color: #b91c1c; }
-        .cf-title { font-size: 1.05rem; font-weight: 600; color: #0f172a; }
-        .cf-text { margin-top: .4rem; font-size: .9rem; color: #475569; line-height: 1.45; }
-        .cf-actions { display: flex; justify-content: flex-end; gap: .6rem; margin-top: 1.4rem; }
-        .cf-btn { padding: .55rem 1.1rem; border-radius: .6rem; font-size: .9rem; font-weight: 500; border: 0; cursor: pointer; }
-        .cf-cancel { background: #f1f5f9; color: #334155; }
-        .cf-cancel:hover { background: #e2e8f0; }
-        .cf-ok { background: #334155; color: #fff; }
-        .cf-ok:hover { background: #1e293b; }
-        .cf-box.danger .cf-ok { background: #dc2626; }
-        .cf-box.danger .cf-ok:hover { background: #b91c1c; }
+{{-- Confirmation dialog: any <form data-confirm="..."> asks before it submits --}}
+<div id="cf-back" class="cf-back" role="dialog" aria-modal="true" aria-labelledby="cf-title">
+    <div id="cf-box" class="cf-box">
+        <div class="cf-icon"><i class="ti ti-alert-triangle"></i></div>
+        <p id="cf-title" class="cf-title">Please confirm</p>
+        <p id="cf-text" class="cf-text"></p>
+        <div class="cf-actions">
+            <button type="button" id="cf-cancel" class="cf-btn cf-cancel">Cancel</button>
+            <button type="button" id="cf-ok" class="cf-btn cf-ok">Confirm</button>
         </div>
     </div>
 </div>

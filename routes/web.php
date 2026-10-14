@@ -78,18 +78,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/repairs', [RepairJobController::class, 'index'])->name('repairs.index');
         Route::get('/repairs/create', [RepairJobController::class, 'create'])->name('repairs.create');
         Route::get('/repairs/serial-lookup', [RepairJobController::class, 'serialLookup'])->name('repairs.serial-lookup');
-        Route::get('/repairs/serial-lookup', [RepairJobController::class, 'serialLookup'])->name('repairs.serial-lookup');
         Route::post('/repairs', [RepairJobController::class, 'store'])->name('repairs.store');
         Route::get('/repairs/{repair}', [RepairJobController::class, 'show'])->name('repairs.show');
         Route::post('/repairs/{repair}/parts', [RepairJobController::class, 'storePart'])->name('repairs.parts');
         Route::post('/repairs/{repair}/units', [RepairJobController::class, 'storeUnits'])->name('repairs.units');
         Route::patch('/repairs/{repair}/status', [RepairJobController::class, 'updateStatus'])->name('repairs.status');
-        Route::post('/repairs/{repair}/units', [RepairJobController::class, 'storeUnits'])->name('repairs.units');
-
-        // Assigning / reassigning a job: Technical Head + Operational Manager only
-        Route::post('/repairs/{repair}/assign', [RepairJobController::class, 'assign'])
-            ->middleware('role:admin,technical_head')
-            ->name('repairs.assign');
 
         // Assigning / reassigning a job: Technical Head + Operational Manager only
         Route::post('/repairs/{repair}/assign', [RepairJobController::class, 'assign'])
@@ -133,7 +126,6 @@ Route::middleware('auth')->group(function () {
         Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
         Route::put('/users/{user}/password', [UserController::class, 'resetPassword'])->name('users.password');
         Route::patch('/users/{user}/status', [UserController::class, 'toggleStatus'])->name('users.status');
-        Route::patch('/repairs/{repair}/assign', [RepairJobController::class, 'assign'])->name('repairs.assign');
     });
 });
 
