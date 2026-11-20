@@ -24,10 +24,17 @@
         ['label' => 'Open Repairs', 'value' => $stats['open_repairs'],
          'note' => 'Not yet completed', 'roles' => ['admin', 'technical_head', 'technician'], 'icon' => 'tool',
          'url' => fn () => route('repairs.index', ['status' => 'open'])],
+        $user->role === 'admin'
+            ? ['label' => 'POs for Approval', 'value' => $stats['po_draft'],
+               'note' => $stats['po_sent'] . ' awaiting delivery', 'roles' => ['admin'], 'icon' => 'shopping-cart',
+               'url' => fn () => route('purchase-orders.index', ['status' => 'draft'])]
+            : ['label' => 'POs Awaiting Delivery', 'value' => $stats['po_sent'],
+               'note' => 'Sent to supplier, not yet received', 'roles' => ['secretary', 'staff'], 'icon' => 'shopping-cart',
+               'url' => fn () => route('purchase-orders.index', ['status' => 'sent'])],
     ];
     $visible = array_filter($cards, fn ($c) => in_array($user->role, $c['roles']));
     // Fewer columns on small screens so the cards don't get squeezed
-    $colClass = [1 => 'grid-cols-1', 2 => 'grid-cols-1 sm:grid-cols-2', 3 => 'grid-cols-1 sm:grid-cols-3', 4 => 'grid-cols-2 xl:grid-cols-4', 5 => 'grid-cols-2 md:grid-cols-3 xl:grid-cols-5'][count($visible)] ?? 'grid-cols-1 sm:grid-cols-3';
+    $colClass = [1 => 'grid-cols-1', 2 => 'grid-cols-1 sm:grid-cols-2', 3 => 'grid-cols-1 sm:grid-cols-3', 4 => 'grid-cols-2 xl:grid-cols-4', 5 => 'grid-cols-2 md:grid-cols-3 xl:grid-cols-5', 6 => 'grid-cols-2 md:grid-cols-3 xl:grid-cols-6'][count($visible)] ?? 'grid-cols-1 sm:grid-cols-3';
     $showSales = $user->hasRole('admin', 'secretary');
     $showRepairs = $user->hasRole('admin', 'technical_head', 'technician');
 
@@ -95,7 +102,7 @@
                     <a href="{{ route('sales.show', $sale) }}" class="flex items-center justify-between px-6 py-3 hover:bg-slate-50">
                         <div>
                             <p class="font-medium text-sm">{{ $sale->customer->name }}</p>
-                            <p class="text-xs text-slate-400">{{ $sale->invoice_no }} · {{ $sale->sale_date->format('Y-m-d') }}</p>
+                            <p class="text-xs text-slate-400">{{ $sale->invoice_no }} · {{ $sale->sale_date->format('M d, Y') }}</p>
                         </div>
                         <div class="text-right">
                             <p class="font-medium text-sm">₱{{ number_format($sale->total_amount, 2) }}</p>

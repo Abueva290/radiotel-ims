@@ -89,8 +89,10 @@
 </form>
 
 @if ($noData)
-    <div class="mb-5 rounded-xl border border-red-200 bg-red-50 px-5 py-3 text-sm text-red-700" role="alert">
-        No data found for the dates selected ({{ $from->format('M d, Y') }} to {{ $to->format('M d, Y') }}). Please choose another date range.
+        <div class="mb-5 flex items-start gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm text-slate-600" role="status">
+        <i class="ti ti-info-circle text-lg text-slate-400"></i>
+        <p>No records for the <span class="font-medium">{{ \App\Http\Controllers\ReportController::REPORTS[$tab]['title'] ?? 'selected report' }}</span>
+            from {{ $from->format('M d, Y') }} to {{ $to->format('M d, Y') }}. Choose another date range or another report.</p>
     </div>
 @endif
 

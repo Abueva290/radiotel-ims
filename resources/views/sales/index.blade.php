@@ -55,7 +55,7 @@
             @forelse ($sales as $sale)
                 <tr class="border-b border-slate-50 hover:bg-slate-50">
                     <td class="px-4 py-3 font-medium">{{ $sale->invoice_no }}</td>
-                    <td class="px-4 py-3 text-slate-500">{{ $sale->sale_date->format('Y-m-d') }}</td>
+                    <td class="px-4 py-3 text-slate-500">{{ $sale->sale_date->format('M d, Y') }}</td>
                     <td class="px-4 py-3">{{ $sale->customer->name }}</td>
                     <td class="px-4 py-3 text-slate-500">
                         {{ $sale->items->map(fn ($i) => $i->product->name . ' ×' . $i->quantity)->implode(', ') }}

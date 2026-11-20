@@ -59,6 +59,9 @@
         .cf-ok:hover { background: #1e293b; }
         .cf-box.danger .cf-ok { background: #dc2626; }
         .cf-box.danger .cf-ok:hover { background: #b91c1c; }
+        /* ---- Light buttons (Cancel, Back) stay visible on the grey page background ---- */
+        main a.bg-slate-100, main button.bg-slate-100 { background: #fff; border: 1px solid #e2e8f0; }
+        main a.bg-slate-100:hover, main button.bg-slate-100:hover { background: #f1f5f9; }
     </style>
     <script>
         // Apply the saved text size right away (before the page shows)
@@ -114,7 +117,7 @@
             ['label' => 'Customers',        'icon' => 'users',            'route' => 'customers.index',   'roles' => ['admin', 'secretary']],
             ['label' => 'Suppliers',        'icon' => 'truck',            'route' => 'suppliers.index',   'roles' => ['admin', 'secretary']],
             ['label' => 'Inventory',        'icon' => 'package',          'route' => 'inventory.index',   'roles' => ['admin', 'staff']],
-            ['label' => 'Repair & Service', 'icon' => 'tool',             'route' => 'repairs.index',     'roles' => ['admin', 'technical_head', 'technician']],
+             ['label' => 'Factory Defects',  'icon' => 'alert-octagon',    'route' => 'defects.index',     'roles' => ['admin', 'technical_head', 'technician', 'staff']],
         ],
         'Finance' => [
             ['label' => 'Receivables',      'icon' => 'cash',             'route' => 'receivables.index', 'roles' => ['admin', 'secretary']],
@@ -162,12 +165,12 @@
                             && \Illuminate\Support\Facades\Route::has($i['route']));
                     @endphp
                     @if (count($visible))
-                        <p class="px-3 pt-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400 first:pt-0">{{ $title }}</p>
+                        <p class="px-3 pt-2 pb-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400 first:pt-0">{{ $title }}</p>
                         <div class="space-y-0.5">
                             @foreach ($visible as $item)
                                 @php $active = request()->routeIs(explode('.', $item['route'])[0] . '*'); @endphp
                                 <a href="{{ route($item['route']) }}"
-                                   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors
+                                   class="flex items-center gap-3 px-3 py-1.5 rounded-lg text-sm transition-colors
                                           {{ $active ? 'bg-slate-800 text-white font-medium' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
                                     <i class="ti ti-{{ $item['icon'] }} text-lg {{ $active ? 'text-emerald-400' : 'text-slate-400' }}"></i>
                                     {{ $item['label'] }}

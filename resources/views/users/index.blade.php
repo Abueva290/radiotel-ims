@@ -69,7 +69,7 @@
                         <x-badge type="role" :value="$u->role" />
                     </td>
                     <td class="px-4 py-3 text-slate-500">{{ $u->email }}</td>
-                    <td class="px-4 py-3 text-slate-500">{{ $u->last_login_at?->format('Y-m-d h:i A') ?? 'Never' }}</td>
+                    <td class="px-4 py-3 text-slate-500">{{ $u->last_login_at?->format('M d, Y h:i A') ?? 'Never' }}</td>
                     <td class="px-4 py-3 text-center">
                         <x-badge type="account" :value="$u->status" />
                     </td>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\PurchaseOrder;
 use App\Models\Receivable;
 use App\Models\RepairJob;
 use App\Models\Sale;
@@ -36,6 +37,8 @@ class DashboardController extends Controller
             'overdue'          => RepairJob::filter(['overdue' => 1])->count(),
             'awaiting_release' => RepairJob::filter(['status' => 'completed'])->count(),
             'warranty'         => RepairJob::filter(['warranty' => 'active'])->count(),
+            'po_draft' => PurchaseOrder::where('status', 'draft')->count(),
+            'po_sent'  => PurchaseOrder::where('status', 'sent')->count(),
         ];
 
         return view('dashboard', [
