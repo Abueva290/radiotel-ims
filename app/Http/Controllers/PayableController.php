@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PurchaseOrder;
 use App\Models\Supplier;
 use App\Models\SupplierInvoice;
 use App\Models\SupplierPayment;
@@ -74,23 +75,42 @@ class PayableController extends Controller
         ]);
     }
 
-    public function create()
+    public function create(Request $request)
     {
+        // "Record Supplier Invoice" on a purchase order pre-fills the supplier and amount
+        $purchaseOrder = $request->integer('purchase_order')
+            ? PurchaseOrder::whereIn('status', ['approved', 'sent', 'received'])->find($request->integer('purchase_order'))
+            : null;
+
         return view('payables.create', [
-            'suppliers' => Supplier::orderBy('name')->get(),
+            'suppliers'      => Supplier::orderBy('name')->get(),
+            'purchaseOrder'  => $purchaseOrder,
+            'purchaseOrders' => PurchaseOrder::whereIn('status', ['approved', 'sent', 'received'])
+                ->orderByDesc('order_date')->get(['id', 'po_no', 'supplier_id', 'total_amount']),
         ]);
     }
 
     public function store(Request $request)
     {
         $data = $request->validate([
-            'supplier_id'  => 'required|exists:suppliers,id,status,active',
-            'invoice_no'   => 'required|string|max:100',
-            'invoice_date' => 'required|date',
-            'amount'       => 'required|numeric|min:0.01',
+            'supplier_id'       => 'required|exists:suppliers,id,status,active',
+            'invoice_no'        => 'required|string|max:100',
+            'invoice_date'      => 'required|date',
+            'amount'            => 'required|numeric|min:0.01',
+            'purchase_order_id' => 'nullable|integer',
         ]);
 
         $supplier = Supplier::find($data['supplier_id']);
+
+        // Optional link to the purchase order this invoice bills: must be the same supplier and not a draft/cancelled PO
+        if (! empty($data['purchase_order_id'])) {
+            $po = PurchaseOrder::whereIn('status', ['approved', 'sent', 'received'])->find($data['purchase_order_id']);
+            if (! $po || $po->supplier_id !== $supplier->id) {
+                throw ValidationException::withMessages([
+                    'purchase_order_id' => 'The selected purchase order is not an approved PO of this supplier.',
+                ]);
+            }
+        }
 
         $duplicate = SupplierInvoice::where('supplier_id', $supplier->id)
             ->where('invoice_no', $data['invoice_no'])
@@ -115,7 +135,7 @@ class PayableController extends Controller
 
     public function show(SupplierInvoice $payable)
     {
-        $payable->load('supplier', 'recorder', 'payments.recorder');
+        $payable->load('supplier', 'recorder', 'payments.recorder', 'purchaseOrder');
 
         return view('payables.show', ['invoice' => $payable]);
     }

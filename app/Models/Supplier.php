@@ -22,4 +22,9 @@ class Supplier extends Model
     {
         return $this->hasMany(SupplierInvoice::class);
     }
+
+    public function purchaseOrders()
+    {
+        return $this->hasMany(PurchaseOrder::class);
+    }
 }

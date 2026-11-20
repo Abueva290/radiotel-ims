@@ -13,6 +13,9 @@
         <p class="text-sm text-slate-500">
             {{ $invoice->supplier->name }} · Due {{ $invoice->due_date->format('F d, Y') }}
             ({{ $invoice->supplier->credit_terms_days }}-day terms)
+                        @if ($invoice->purchaseOrder)
+                · for <a href="{{ route('purchase-orders.show', $invoice->purchaseOrder) }}" class="underline hover:text-slate-800">{{ $invoice->purchaseOrder->po_no }}</a>
+            @endif
         </p>
     </div>
     <a href="{{ route('payables.index') }}" class="px-4 py-2 rounded-lg bg-slate-100 text-sm hover:bg-slate-200">Back</a>

@@ -6,6 +6,7 @@
 @php
     $input = 'w-full rounded-lg border-slate-300 text-sm focus:border-slate-500 focus:ring-slate-500';
     $terms = $suppliers->pluck('credit_terms_days', 'id');
+    $poList = $purchaseOrders->map(fn ($p) => ['id' => $p->id, 'no' => $p->po_no, 'supplier' => $p->supplier_id, 'total' => (float) $p->total_amount])->values();
 @endphp
 
 <div class="max-w-2xl">
@@ -15,7 +16,10 @@
           class="bg-white rounded-xl border border-slate-200 p-6"
           x-data="{
               terms: @js($terms),
-              supplier: '{{ old('supplier_id') }}',
+              supplier: '{{ old('supplier_id', $purchaseOrder?->supplier_id) }}',
+              po: '{{ old('purchase_order_id', $purchaseOrder?->id) }}',
+              pos: @js($poList),
+              posOf() { return this.pos.filter(p => String(p.supplier) === String(this.supplier)); },
               date: '{{ old('invoice_date', now()->toDateString()) }}',
               dueDate() {
                   if (!this.supplier || !this.date) return '—';
@@ -33,7 +37,7 @@
         <div class="grid grid-cols-2 gap-4">
             <div class="col-span-2">
                 <label class="block text-sm font-medium mb-1">Supplier</label>
-                <select name="supplier_id" x-model="supplier" class="{{ $input }}">
+                <select name="supplier_id" x-model="supplier" @change="po = ''" class="{{ $input }}">
                     <option value="">Select supplier...</option>
                     @foreach ($suppliers->where('status', 'active') as $supplier)
                         <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
@@ -41,15 +45,25 @@
                 </select>
             </div>
 
+            <div class="col-span-2">
+                <label class="block text-sm font-medium mb-1">Purchase Order <span class="font-normal text-slate-400">(optional)</span></label>
+                <select name="purchase_order_id" x-model="po" class="{{ $input }}">
+                    <option value="">Not linked to a purchase order</option>
+                    <template x-for="p in posOf()" :key="p.id">
+                        <option :value="p.id" x-text="p.no + ' · ₱' + p.total.toLocaleString('en-PH', { minimumFractionDigits: 2 })" :selected="String(p.id) === String(po)"></option>
+                    </template>
+                </select>
+            </div>
+
             <div>
                 <label class="block text-sm font-medium mb-1">Supplier Invoice No.</label>
-                <input type="text" name="invoice_no" value="{{ old('invoice_no') }}"
-                       placeholder="e.g. MSP-2026-1183" class="{{ $input }}">
+                         <input type="text" name="invoice_no" value="{{ old('invoice_no') }}"
+                       placeholder="e.g. MSP-2026-1183" required class="{{ $input }}">
             </div>
 
             <div>
                 <label class="block text-sm font-medium mb-1">Amount (₱)</label>
-                <input type="number" step="0.01" name="amount" value="{{ old('amount') }}" class="{{ $input }}">
+                <input type="number" step="0.01" name="amount" value="{{ old('amount', $purchaseOrder?->total_amount) }}" class="{{ $input }}">
             </div>
 
             <div>

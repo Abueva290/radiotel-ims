@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class SupplierInvoice extends Model
 {
     protected $fillable = [
-        'supplier_id', 'invoice_no', 'invoice_date', 'amount',
+        'supplier_id', 'purchase_order_id', 'invoice_no', 'invoice_date', 'amount',
         'due_date', 'balance', 'status', 'recorded_by',
     ];
 
@@ -29,6 +29,11 @@ class SupplierInvoice extends Model
     public function supplier()
     {
         return $this->belongsTo(Supplier::class);
+    }
+
+    public function purchaseOrder()
+    {
+        return $this->belongsTo(PurchaseOrder::class);
     }
 
     public function recorder()

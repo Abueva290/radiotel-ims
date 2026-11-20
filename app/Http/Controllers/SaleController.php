@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
+use App\Models\CustomerOrder;
 use App\Models\InventoryMovement;
 use App\Models\Product;
 use App\Models\ProductUnit;
@@ -37,7 +38,13 @@ class SaleController extends Controller
             'unpaid' => Receivable::whereNotNull('sale_id')->sum('balance'),
         ];
 
+        // "Convert to Sale" on a customer order opens the New Sale form pre-filled with that order
+        $fromOrder = $request->integer('from_order')
+            ? CustomerOrder::with('items.product')->open()->find($request->integer('from_order'))
+            : null;
+
         return view('sales.index', [
+            'fromOrder' => $fromOrder,
             'sales'     => $sales,
             'totals'    => $totals,
             'status'    => $status,
@@ -75,10 +82,22 @@ class SaleController extends Controller
             'items.*.unit_price'   => 'required|numeric|min:0',
             'items.*.unit_ids'     => 'nullable|array',
             'items.*.unit_ids.*'   => 'integer',
+            'customer_order_id'    => 'nullable|integer',
         ], [
             'items.required'     => 'Add at least one product to the sale.',
             'customer_id.exists' => 'The selected customer is archived or does not exist.',
         ]);
+
+        // Sale made from a customer order: the order must still be open and belong to the same customer
+        $customerOrder = null;
+        if (! empty($data['customer_order_id'])) {
+            $customerOrder = CustomerOrder::open()->find($data['customer_order_id']);
+            if (! $customerOrder || $customerOrder->customer_id != $data['customer_id']) {
+                throw ValidationException::withMessages([
+                    'customer_order_id' => 'The customer order is already completed, cancelled, or belongs to a different customer.',
+                ]);
+            }
+        }
 
         // Combine duplicate rows of the same product, then check stock
         $lines = [];
@@ -109,7 +128,7 @@ class SaleController extends Controller
             }
         }
 
-        $sale = DB::transaction(function () use ($data, $lines, $request) {
+        $sale = DB::transaction(function () use ($data, $lines, $request, $customerOrder) {
             $total = 0;
             foreach ($lines as $line) {
                 $total += $line['quantity'] * $line['unit_price'];
@@ -185,16 +204,20 @@ class SaleController extends Controller
                 'status'      => 'unpaid',
             ]);
 
+            // The customer's purchase order is now fulfilled
+            $customerOrder?->update(['status' => 'completed', 'sale_id' => $sale->id]);
+
             return $sale;
         });
 
         return redirect()->route('sales.show', $sale)
-            ->with('success', "Sale {$sale->invoice_no} recorded. Stock deducted and receivable created.");
+            ->with('success', "Sale {$sale->invoice_no} recorded. Stock deducted and receivable created."
+                . ($customerOrder ? " Customer order {$customerOrder->order_no} marked as completed." : ''));
     }
 
     public function show(Sale $sale)
     {
-        $sale->load('customer', 'creator', 'items.product', 'items.units', 'receivable.payments');
+        $sale->load('customer', 'creator', 'items.product', 'items.units', 'receivable.payments', 'customerOrder');
 
         return view('sales.show', compact('sale'));
     }

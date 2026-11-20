@@ -22,6 +22,8 @@ class AuditTrailController extends Controller
         'repair_job_units'    => 'Repair Unit Serial',
         'product_units'       => 'Serial-Numbered Unit',
         'factory_defects'     => 'Factory Defect',
+        'customer_orders'     => 'Customer Order',
+        'purchase_orders'     => 'Purchase Order',
         'customers'           => 'Customer',
         'suppliers'           => 'Supplier',
         'users'               => 'User Account',

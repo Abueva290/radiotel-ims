@@ -32,4 +32,9 @@ class Customer extends Model
     {
         return $this->hasMany(Receivable::class);
     }
+
+    public function orders()
+    {
+        return $this->hasMany(CustomerOrder::class);
+    }
 }

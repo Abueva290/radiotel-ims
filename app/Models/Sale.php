@@ -48,11 +48,18 @@ class Sale extends Model
         return $this->hasMany(SaleItem::class);
     }
 
+    /** The customer purchase order this sale fulfilled, if any. */
+    public function customerOrder()
+    {
+        return $this->hasOne(CustomerOrder::class);
+    }
+
     public function receivable()
     {
         return $this->hasOne(Receivable::class);
     }
-        /**
+
+    /**
      * Filters for the Sales page (also used by the dashboard KPI link).
      * "overdue" = not fully paid and the receivable is past its due date.
      */

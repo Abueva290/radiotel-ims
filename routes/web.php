@@ -4,10 +4,12 @@ use App\Http\Controllers\FactoryDefectController;
 use App\Http\Controllers\AuditTrailController;
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\CustomerOrderController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PasswordChangeController;
 use App\Http\Controllers\PayableController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\ReceivableController;
 use App\Http\Controllers\RepairJobController;
 use App\Http\Controllers\SaleController;
@@ -53,6 +55,20 @@ Route::middleware('auth')->group(function () {
         Route::put('/customers/{customer}', [CustomerController::class, 'update'])->name('customers.update');
         Route::patch('/customers/{customer}/archive', [CustomerController::class, 'toggleArchive'])->name('customers.archive');
 
+        // Customer purchase orders (phone / walk-in orders before they become a sale)
+        Route::get('/customer-orders', [CustomerOrderController::class, 'index'])->name('customer-orders.index');
+        Route::get('/customer-orders/create', [CustomerOrderController::class, 'create'])->name('customer-orders.create');
+        Route::post('/customer-orders', [CustomerOrderController::class, 'store'])->name('customer-orders.store');
+        Route::get('/customer-orders/{customerOrder}', [CustomerOrderController::class, 'show'])->name('customer-orders.show');
+        Route::patch('/customer-orders/{customerOrder}/cancel', [CustomerOrderController::class, 'cancel'])->name('customer-orders.cancel');
+
+        // Supplier purchase orders: Secretary prepares and sends; approval is Admin only (see below)
+        Route::get('/purchase-orders/create', [PurchaseOrderController::class, 'create'])->name('purchase-orders.create');
+        Route::post('/purchase-orders', [PurchaseOrderController::class, 'store'])->name('purchase-orders.store');
+        Route::patch('/purchase-orders/{purchaseOrder}/send', [PurchaseOrderController::class, 'send'])->name('purchase-orders.send');
+        Route::patch('/purchase-orders/{purchaseOrder}/cancel', [PurchaseOrderController::class, 'cancel'])->name('purchase-orders.cancel');
+        Route::get('/purchase-orders/{purchaseOrder}/print', [PurchaseOrderController::class, 'document'])->name('purchase-orders.document');
+
         // Supplier records (archive instead of delete)
         Route::get('/suppliers', [SupplierController::class, 'index'])->name('suppliers.index');
         Route::post('/suppliers', [SupplierController::class, 'store'])->name('suppliers.store');
@@ -61,8 +77,17 @@ Route::middleware('auth')->group(function () {
         Route::patch('/suppliers/{supplier}/archive', [SupplierController::class, 'toggleArchive'])->name('suppliers.archive');
     });
 
+    // Purchase orders: Secretary prepares, Staff receives the delivery, Admin does everything
+    Route::middleware('role:admin,secretary,staff')->group(function () {
+        Route::get('/purchase-orders', [PurchaseOrderController::class, 'index'])->name('purchase-orders.index');
+        Route::get('/purchase-orders/{purchaseOrder}', [PurchaseOrderController::class, 'show'])
+            ->whereNumber('purchaseOrder')->name('purchase-orders.show');
+    });
+
     // Staff + Admin
     Route::middleware('role:admin,staff')->group(function () {
+        Route::patch('/purchase-orders/{purchaseOrder}/receive', [PurchaseOrderController::class, 'receive'])->name('purchase-orders.receive');
+
         Route::get('/inventory', [ProductController::class, 'index'])->name('inventory.index');
         Route::get('/inventory/create', [ProductController::class, 'create'])->name('inventory.create');
         Route::post('/inventory', [ProductController::class, 'store'])->name('inventory.store');
@@ -112,6 +137,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/backups/{file}/download', [BackupController::class, 'download'])
             ->where('file', '[A-Za-z0-9_\-]+\.zip')
             ->name('backups.download');
+
+        // Approving supplier purchase orders: Operational Manager only
+        Route::patch('/purchase-orders/{purchaseOrder}/approve', [PurchaseOrderController::class, 'approve'])->name('purchase-orders.approve');
 
         // Supplier payments: Operational Manager only (per the use case diagram)
         Route::post('/payables/{payable}/payment', [PayableController::class, 'storePayment'])->name('payables.payment');
