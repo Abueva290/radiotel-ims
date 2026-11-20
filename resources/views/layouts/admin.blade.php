@@ -117,7 +117,8 @@
             ['label' => 'Customers',        'icon' => 'users',            'route' => 'customers.index',   'roles' => ['admin', 'secretary']],
             ['label' => 'Suppliers',        'icon' => 'truck',            'route' => 'suppliers.index',   'roles' => ['admin', 'secretary']],
             ['label' => 'Inventory',        'icon' => 'package',          'route' => 'inventory.index',   'roles' => ['admin', 'staff']],
-             ['label' => 'Factory Defects',  'icon' => 'alert-octagon',    'route' => 'defects.index',     'roles' => ['admin', 'technical_head', 'technician', 'staff']],
+                         ['label' => 'Repair & Service', 'icon' => 'tool',             'route' => 'repairs.index',     'roles' => ['admin', 'technical_head', 'technician']],
+            ['label' => 'Factory Defects',  'icon' => 'alert-octagon',    'route' => 'defects.index',     'roles' => ['admin', 'technical_head', 'technician', 'staff']],
         ],
         'Finance' => [
             ['label' => 'Receivables',      'icon' => 'cash',             'route' => 'receivables.index', 'roles' => ['admin', 'secretary']],
