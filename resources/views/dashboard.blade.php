@@ -63,7 +63,7 @@
                 <p class="text-xs text-slate-500">{{ $card['label'] }}</p>
                 <i class="ti ti-{{ $card['icon'] }} text-lg text-slate-300"></i>
             </div>
-            <p class="text-2xl font-semibold mt-2">{{ $card['value'] }}</p>
+            <p class="text-lg sm:text-2xl font-semibold mt-2 [overflow-wrap:anywhere]">{{ $card['value'] }}</p>
             <p class="text-xs text-slate-400 mt-1 flex items-center justify-between gap-2">
                 <span class="truncate">{{ $card['note'] }}</span>
                 <i class="ti ti-arrow-right kpi-arrow"></i>

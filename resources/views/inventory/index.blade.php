@@ -31,7 +31,7 @@
            class="kpi-card {{ $selected ? 'kpi-card-active' : '' }}"
            aria-label="{{ $label }}: {{ $value }}. {{ $filter ? 'Show these products' : 'Show all products' }}">
             <p class="text-xs text-slate-500">{{ $label }}</p>
-            <p class="text-2xl font-semibold mt-2">{{ $value }}</p>
+            <p class="text-lg sm:text-2xl font-semibold mt-2 [overflow-wrap:anywhere]">{{ $value }}</p>
             <p class="text-xs text-slate-400 mt-1 flex items-center justify-between gap-2">
                 <span class="truncate">{{ $note }}</span><i class="ti ti-arrow-right kpi-arrow"></i>
             </p>
@@ -68,7 +68,7 @@
 @endif
 
 <div class="bg-white rounded-xl border border-slate-200 overflow-x-auto">
-    <table class="w-full text-sm">
+    <table class="w-full text-sm [&_th]:whitespace-nowrap [&_th]:!px-3 [&_td]:!px-3">
         <thead class="text-xs uppercase text-slate-400 border-b border-slate-100">
             <tr>
                 <th class="px-4 py-3 text-left">ID</th>
@@ -76,10 +76,10 @@
                 <th class="px-4 py-3 text-left">Brand</th>
                 <th class="px-4 py-3 text-left">Category</th>
                 <th class="px-4 py-3 text-center">Stock</th>
-                <th class="px-4 py-3 text-center">Reorder</th>
+                <th class="px-4 py-3 text-center hidden 2xl:table-cell">Reorder</th>
                 <th class="px-4 py-3 text-right">Unit Cost</th>
                 <th class="px-4 py-3 text-right">Selling Price</th>
-                <th class="px-4 py-3 text-center">Warranty</th>
+                <th class="px-4 py-3 text-center hidden 2xl:table-cell">Warranty</th>
                 <th class="px-4 py-3 text-center">Status</th>
                 <th class="px-4 py-3"></th>
             </tr>
@@ -87,7 +87,7 @@
         <tbody>
             @forelse ($products as $product)
                 <tr class="border-b border-slate-50 hover:bg-slate-50">
-                    <td class="px-4 py-3 text-slate-400">P{{ str_pad($product->id, 3, '0', STR_PAD_LEFT) }}</td>
+                    <td class="px-4 py-3 text-slate-400 whitespace-nowrap">P{{ str_pad($product->id, 3, '0', STR_PAD_LEFT) }}</td>
                     <td class="px-4 py-3 font-medium">
                         {{ $product->name }}
                         @if ($product->is_serialized)
@@ -95,14 +95,14 @@
                         @endif
                     </td>
                     <td class="px-4 py-3">{{ $product->brand }}</td>
-                    <td class="px-4 py-3 text-slate-500">{{ \App\Models\Product::CATEGORIES[$product->category] }}</td>
+                    <td class="px-4 py-3 text-slate-500 whitespace-nowrap">{{ \App\Models\Product::CATEGORIES[$product->category] }}</td>
                     <td class="px-4 py-3 text-center">
                         <span class="px-2 py-0.5 rounded bg-slate-100">{{ $product->stock_qty }}</span>
                     </td>
-                    <td class="px-4 py-3 text-center text-slate-500">{{ $product->reorder_level }}</td>
-                    <td class="px-4 py-3 text-right">₱{{ number_format($product->unit_cost, 2) }}</td>
-                    <td class="px-4 py-3 text-right font-medium">₱{{ number_format($product->selling_price, 2) }}</td>
-                    <td class="px-4 py-3 text-center text-slate-500 whitespace-nowrap">{{ $product->warrantyLabel() ?? '—' }}</td>
+                    <td class="px-4 py-3 text-center text-slate-500 hidden 2xl:table-cell">{{ $product->reorder_level }}</td>
+                    <td class="px-4 py-3 text-right whitespace-nowrap">₱{{ number_format($product->unit_cost, 2) }}</td>
+                    <td class="px-4 py-3 text-right font-medium whitespace-nowrap">₱{{ number_format($product->selling_price, 2) }}</td>
+                    <td class="px-4 py-3 text-center text-slate-500 whitespace-nowrap hidden 2xl:table-cell">{{ $product->warrantyLabel() ?? '—' }}</td>
                     <td class="px-4 py-3 text-center">
                         <x-badge type="stock" :value="$product->stockStatus()" />
                     </td>

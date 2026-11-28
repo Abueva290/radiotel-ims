@@ -48,7 +48,7 @@
            class="kpi-card {{ $active ? 'kpi-card-active' : '' }}"
            aria-label="{{ $label }}: {{ $value }}. {{ $key ? 'Show these invoices' : 'Show all invoices' }}">
             <p class="text-xs {{ $alert ? 'text-red-700' : 'text-slate-500' }}">{{ $label }}</p>
-            <p class="text-2xl font-semibold mt-2 tabular-nums {{ $alert ? 'text-red-600' : '' }}">{{ $value }}</p>
+            <p class="text-lg sm:text-2xl font-semibold mt-2 [overflow-wrap:anywhere] tabular-nums {{ $alert ? 'text-red-600' : '' }}">{{ $value }}</p>
             <p class="text-xs text-slate-400 mt-1 flex items-center justify-between gap-2">
                 <span class="truncate">{{ $note }}</span><i class="ti ti-arrow-right kpi-arrow"></i>
             </p>
@@ -145,10 +145,10 @@
         @if ($selected)
             <a href="{{ $listUrl(['supplier' => null]) }}" class="text-sm text-slate-600 underline hover:text-slate-900">Show all suppliers</a>
         @endif
-        <form method="GET" action="{{ route('payables.index') }}#invoices" class="flex items-center gap-2">
+        <form method="GET" action="{{ route('payables.index') }}#invoices" class="flex flex-wrap items-center gap-2">
         @if ($selected)<input type="hidden" name="supplier" value="{{ $selected->id }}">@endif
         @if ($filter)<input type="hidden" name="filter" value="{{ $filter }}">@endif
-        <label for="sort" class="text-sm text-slate-500">Sort by due date</label>
+        <label for="sort" class="text-sm text-slate-500 whitespace-nowrap">Sort by due date</label>
         <select id="sort" name="sort" onchange="this.form.submit()"
                 class="rounded-lg border-slate-300 text-sm focus:border-slate-500 focus:ring-slate-500">
             <option value="asc"  @selected($sort === 'asc')>Ascending (nearest due date first)</option>

@@ -8,11 +8,11 @@
 <div class="max-w-3xl">
     <h1 class="text-2xl font-semibold mb-6">Add User</h1>
 
-    <form method="POST" action="{{ route('users.store') }}" class="bg-white rounded-xl border border-slate-200 p-8">
+    <form method="POST" action="{{ route('users.store') }}" class="bg-white rounded-xl border border-slate-200 p-5 sm:p-8">
         @csrf
 
-        <div class="grid grid-cols-2 gap-5">
-            <div class="col-span-2">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div class="sm:col-span-2">
                 <label class="block text-[15px] font-medium mb-1.5">Full Name</label>
                 <input type="text" name="name" value="{{ old('name') }}" class="{{ $input }}">
                 @error('name') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
@@ -34,7 +34,7 @@
                 @error('role') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
             </div>
 
-            <div class="col-span-2">
+            <div class="sm:col-span-2">
                 <label class="block text-[15px] font-medium mb-1.5">Temporary Password</label>
                 <div class="flex gap-3" x-data="{ pw: @js(old('password', '')) }">
                     <input type="text" name="password" x-model="pw" class="{{ $input }}">

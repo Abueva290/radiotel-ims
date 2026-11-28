@@ -24,7 +24,7 @@
            class="kpi-card {{ $selected && $key ? 'kpi-card-active' : '' }}"
            aria-label="{{ $label }}: {{ $value }}. {{ $key ? 'Show these accounts' : 'Show all accounts' }}">
             <p class="text-xs {{ $key === 'overdue' && $stats['overdue_count'] ? 'text-red-700' : 'text-slate-500' }}">{{ $label }}</p>
-            <p class="text-2xl font-semibold mt-2 {{ $key === 'overdue' && $stats['overdue_count'] ? 'text-red-600' : '' }}">{{ $value }}</p>
+            <p class="text-lg sm:text-2xl font-semibold mt-2 [overflow-wrap:anywhere] {{ $key === 'overdue' && $stats['overdue_count'] ? 'text-red-600' : '' }}">{{ $value }}</p>
             <p class="text-xs text-slate-400 mt-1 flex items-center justify-between gap-2">
                 <span class="truncate">{{ $note }}</span><i class="ti ti-arrow-right kpi-arrow"></i>
             </p>
@@ -41,9 +41,9 @@
                     <a href="{{ route('receivables.index', $sort !== 'asc' ? ['sort' => $sort] : []) }}" class="underline">Show all</a></span>
             @endif
         </h2>
-        <form method="GET" action="{{ route('receivables.index') }}" class="flex items-center gap-2">
+        <form method="GET" action="{{ route('receivables.index') }}" class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
         @if ($filter)<input type="hidden" name="filter" value="{{ $filter }}">@endif
-        <label for="sort" class="text-sm text-slate-500">Sort by due date</label>
+        <label for="sort" class="text-sm text-slate-500 whitespace-nowrap">Sort by due date</label>
         <select id="sort" name="sort" onchange="this.form.submit()"
                 class="rounded-lg border-slate-300 text-sm focus:border-slate-500 focus:ring-slate-500">
             <option value="asc"  @selected($sort === 'asc')>Ascending (nearest due date first)</option>
@@ -51,7 +51,7 @@
         </select>
     </form>
     </div>
-    <table class="w-full text-sm">
+    <table class="w-full text-sm [&_th]:whitespace-nowrap">
         <thead class="text-xs uppercase text-slate-400 border-y border-slate-100">
             <tr>
                 <th class="px-6 py-3 text-left">Reference</th>
@@ -67,13 +67,13 @@
             @forelse ($receivables as $ar)
                 @php $overdue = $ar->status !== 'paid' && $ar->due_date->isPast(); @endphp
                 <tr class="border-b border-slate-50 hover:bg-slate-50 {{ $overdue ? 'bg-red-50/40' : '' }}">
-                    <td class="px-6 py-3 font-medium">
+                    <td class="px-6 py-3 font-medium whitespace-nowrap">
                         {{ $ar->sale?->invoice_no ?? $ar->repairJob?->job_no ?? '—' }}
                     </td>
                     <td class="px-6 py-3">{{ $ar->customer->name }}</td>
-                    <td class="px-6 py-3 text-right text-slate-500">₱{{ number_format($ar->amount_due, 2) }}</td>
-                    <td class="px-6 py-3 text-right font-medium">₱{{ number_format($ar->balance, 2) }}</td>
-                    <td class="px-6 py-3 {{ $overdue ? 'text-red-600 font-medium' : 'text-slate-500' }}">
+                    <td class="px-6 py-3 text-right text-slate-500 whitespace-nowrap">₱{{ number_format($ar->amount_due, 2) }}</td>
+                    <td class="px-6 py-3 text-right font-medium whitespace-nowrap">₱{{ number_format($ar->balance, 2) }}</td>
+                    <td class="px-6 py-3 whitespace-nowrap {{ $overdue ? 'text-red-600 font-medium' : 'text-slate-500' }}">
                         {{ $ar->due_date->format('M d, Y') }}
                         @if ($overdue)<span class="text-xs">(overdue)</span>@endif
                     </td>
@@ -97,7 +97,7 @@
 
 <div class="bg-white rounded-xl border border-slate-200 overflow-x-auto">
     <h2 class="font-semibold px-6 pt-5 pb-3">Recent Collections</h2>
-    <table class="w-full text-sm">
+    <table class="w-full text-sm [&_th]:whitespace-nowrap">
         <thead class="text-xs uppercase text-slate-400 border-y border-slate-100">
             <tr>
                 <th class="px-6 py-3 text-left">Receipt</th>

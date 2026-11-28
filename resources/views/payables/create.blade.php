@@ -34,8 +34,8 @@
           }">
         @csrf
 
-        <div class="grid grid-cols-2 gap-4">
-            <div class="col-span-2">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="sm:col-span-2">
                 <label class="block text-sm font-medium mb-1">Supplier</label>
                 <select name="supplier_id" x-model="supplier" @change="po = ''" class="{{ $input }}">
                     <option value="">Select supplier...</option>
@@ -45,7 +45,7 @@
                 </select>
             </div>
 
-            <div class="col-span-2">
+            <div class="sm:col-span-2">
                 <label class="block text-sm font-medium mb-1">Purchase Order <span class="font-normal text-slate-400">(optional)</span></label>
                 <select name="purchase_order_id" x-model="po" class="{{ $input }}">
                     <option value="">Not linked to a purchase order</option>

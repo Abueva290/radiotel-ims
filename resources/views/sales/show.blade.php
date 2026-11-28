@@ -24,15 +24,15 @@
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 p-6">
+    <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 p-4 sm:p-6">
         <h2 class="font-semibold mb-4">Items</h2>
         <div class="overflow-x-auto">
-        <table class="w-full text-sm">
+        <table class="w-full text-sm [&_th]:whitespace-nowrap [&_th:not(:first-child)]:pl-3 [&_td:not(:first-child)]:whitespace-nowrap [&_td:not(:first-child)]:pl-3 [&_th:first-child]:w-full [&_td:first-child]:!whitespace-normal">
             <thead class="text-xs uppercase text-slate-400 border-b border-slate-100">
                 <tr>
                     <th class="py-2 text-left">Product</th>
                     <th class="py-2 text-center">Qty</th>
-                    <th class="py-2 text-right">Unit Price</th>
+                    <th class="py-2 text-right hidden sm:table-cell">Unit Price</th>
                     <th class="py-2 text-right">Subtotal</th>
                 </tr>
             </thead>
@@ -56,7 +56,7 @@
                             @endif
                         </td>
                         <td class="py-3 text-center">{{ $item->quantity }}</td>
-                        <td class="py-3 text-right">₱{{ number_format($item->unit_price, 2) }}</td>
+                        <td class="py-3 text-right hidden sm:table-cell">₱{{ number_format($item->unit_price, 2) }}</td>
                         <td class="py-3 text-right font-medium">₱{{ number_format($item->subtotal, 2) }}</td>
                     </tr>
                 @endforeach

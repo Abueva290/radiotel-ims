@@ -19,8 +19,8 @@
 
         {{-- Sale details --}}
         <div class="bg-white rounded-xl border border-slate-200 p-5 mb-4">
-            <div class="grid grid-cols-5 gap-4">
-                <div class="col-span-2">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div class="sm:col-span-2">
                     <label class="block text-sm font-medium mb-1">Customer</label>
                     <select name="customer_id" class="{{ $input }} truncate">
                         <option value="">Select customer...</option>
@@ -32,7 +32,7 @@
                 <div>
                     <label class="block text-sm font-medium mb-1">Customer PO No.</label>
                   <input type="text" name="customer_po_no" value="{{ old('customer_po_no') }}" maxlength="100" required autocomplete="off"
-                           placeholder="From the customer's PO" class="{{ $input }}">
+                           placeholder="e.g. PO-2026-0458" class="{{ $input }}">
                 </div>
                 <div>
                     <label class="block text-sm font-medium mb-1">Sale Date</label>
@@ -48,21 +48,22 @@
                 </div>
             </div>
 
-            <div class="flex gap-8 mt-4 text-sm text-slate-500">
+            <div class="flex flex-wrap gap-x-8 gap-y-1 mt-4 text-sm text-slate-500">
                 <p>Invoice No: <span class="font-medium text-slate-800">{{ $invoiceNo }}</span></p>
                 <p>DR No: <span class="font-medium text-slate-800">{{ $drNo }}</span></p>
             </div>
         </div>
 
         {{-- Items --}}
-        <div class="bg-white rounded-xl border border-slate-200 p-5">
+        <div class="bg-white rounded-xl border border-slate-200 p-4 sm:p-5">
             <div class="flex items-center justify-between mb-4">
                 <h2 class="font-semibold">Items</h2>
                 <button type="button" @click="addRow()"
                         class="px-3 py-1.5 rounded-lg bg-slate-100 text-sm hover:bg-slate-200">+ Add Item</button>
             </div>
 
-            <table class="w-full text-sm table-fixed">
+            <div class="overflow-x-auto">
+            <table class="w-full text-sm table-fixed min-w-[640px]">
                 <colgroup>
                     <col>
                     <col class="w-20">
@@ -111,6 +112,7 @@
                     </template>
                 </tbody>
             </table>
+            </div>
 
             <div class="flex justify-end items-baseline gap-6 mt-4 pt-4 border-t border-slate-100">
                 <p class="text-sm text-slate-500">Total</p>

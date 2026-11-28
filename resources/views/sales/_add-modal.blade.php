@@ -67,7 +67,7 @@
                         <div>
                             <label class="block text-sm font-medium mb-1.5">Customer PO No.</label>
                                                         <input type="text" name="customer_po_no" value="{{ $isThisForm ? old('customer_po_no') : '' }}" maxlength="100" required autocomplete="off"
-                                   placeholder="From the customer's PO" class="{{ $input }}">
+                                   placeholder="e.g. PO-2026-0458" class="{{ $input }}">
                         </div>
                         <div>
                             <label class="block text-sm font-medium mb-1.5">Sale Date</label>

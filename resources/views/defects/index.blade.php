@@ -26,7 +26,7 @@
     @foreach ($cards as [$label, $value, $params, $note])
         <a href="{{ route('defects.index', $params) }}" class="kpi-card" aria-label="{{ $label }}: {{ $value }}">
             <p class="text-xs text-slate-500">{{ $label }}</p>
-            <p class="text-2xl font-semibold mt-2">{{ $value }}</p>
+            <p class="text-lg sm:text-2xl font-semibold mt-2 [overflow-wrap:anywhere]">{{ $value }}</p>
             <p class="text-xs text-slate-400 mt-1 flex items-center justify-between gap-2"><span class="truncate">{{ $note }}</span><i class="ti ti-arrow-right kpi-arrow"></i></p>
         </a>
     @endforeach

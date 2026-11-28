@@ -38,7 +38,7 @@
 </div>
 
 <div class="bg-white rounded-xl border border-slate-200 overflow-x-auto">
-    <table class="w-full text-sm">
+    <table class="w-full text-sm [&_th]:whitespace-nowrap">
         <thead class="text-xs uppercase text-slate-400 border-b border-slate-100">
             <tr>
                 <th class="px-4 py-3 text-left">Invoice No.</th>
@@ -54,14 +54,14 @@
         <tbody>
             @forelse ($sales as $sale)
                 <tr class="border-b border-slate-50 hover:bg-slate-50">
-                    <td class="px-4 py-3 font-medium">{{ $sale->invoice_no }}</td>
-                    <td class="px-4 py-3 text-slate-500">{{ $sale->sale_date->format('M d, Y') }}</td>
+                    <td class="px-4 py-3 font-medium whitespace-nowrap">{{ $sale->invoice_no }}</td>
+                    <td class="px-4 py-3 text-slate-500 whitespace-nowrap">{{ $sale->sale_date->format('M d, Y') }}</td>
                     <td class="px-4 py-3">{{ $sale->customer->name }}</td>
                     <td class="px-4 py-3 text-slate-500">
                         {{ $sale->items->map(fn ($i) => $i->product->name . ' ×' . $i->quantity)->implode(', ') }}
                     </td>
-                    <td class="px-4 py-3 text-right font-medium">₱{{ number_format($sale->total_amount, 2) }}</td>
-                    <td class="px-4 py-3 text-slate-500">{{ $sale->dr_no }}</td>
+                    <td class="px-4 py-3 text-right font-medium whitespace-nowrap">₱{{ number_format($sale->total_amount, 2) }}</td>
+                    <td class="px-4 py-3 text-slate-500 whitespace-nowrap">{{ $sale->dr_no }}</td>
                     <td class="px-4 py-3 text-center">
                         <x-badge type="payment" :value="Badge::paymentStatus($sale->status, $sale->receivable?->due_date)" />
                     </td>
