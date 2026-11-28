@@ -31,7 +31,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium mb-1">Customer PO No.</label>
-                                        <input type="text" name="customer_po_no" value="{{ old('customer_po_no') }}" maxlength="100" required autocomplete="off"
+                  <input type="text" name="customer_po_no" value="{{ old('customer_po_no') }}" maxlength="100" required autocomplete="off"
                            placeholder="From the customer's PO" class="{{ $input }}">
                 </div>
                 <div>
