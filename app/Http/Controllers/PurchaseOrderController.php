@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\CustomerOrder;
 use App\Models\Product;
 use App\Models\PurchaseOrder;
 use App\Models\Supplier;
@@ -31,7 +30,7 @@ class PurchaseOrderController extends Controller
         ]);
         $status = $filters['status'] ?? null;
 
-        $orders = PurchaseOrder::with('supplier', 'customerOrder.customer', 'items')
+        $orders = PurchaseOrder::with('supplier', 'items')
             ->when($status === 'open', fn ($q) => $q->whereIn('status', ['draft', 'approved', 'sent']))
             ->when($status && $status !== 'open', fn ($q) => $q->where('status', $status))
             ->when($filters['supplier'] ?? null, fn ($q, $id) => $q->where('supplier_id', $id))
@@ -60,19 +59,12 @@ class PurchaseOrderController extends Controller
         ]);
     }
 
-    public function create(Request $request)
+    public function create()
     {
-        // "Order from Supplier" on a customer order pre-fills the items
-        $customerOrder = $request->integer('customer_order')
-            ? CustomerOrder::with('customer', 'items.product')->open()->find($request->integer('customer_order'))
-            : null;
-
         return view('purchase-orders.create', [
-            'suppliers'     => Supplier::active()->orderBy('name')->get(),
-            'products'      => Product::where('status', 'active')->orderBy('name')->get(),
-            'openOrders'    => CustomerOrder::with('customer')->open()->latest('order_date')->get(),
-            'customerOrder' => $customerOrder,
-            'poNo'          => PurchaseOrder::nextPoNo(),
+            'suppliers' => Supplier::active()->orderBy('name')->get(),
+            'products'  => Product::where('status', 'active')->orderBy('name')->get(),
+            'poNo'      => PurchaseOrder::nextPoNo(),
         ]);
     }
 
@@ -80,7 +72,6 @@ class PurchaseOrderController extends Controller
     {
         $data = $request->validate([
             'supplier_id'        => ['required', Rule::exists('suppliers', 'id')->where('status', 'active')],
-            'customer_order_id'  => ['nullable', Rule::exists('customer_orders', 'id')->whereIn('status', ['pending', 'ordered'])],
             'order_date'         => 'required|date',
             'expected_date'      => 'nullable|date|after_or_equal:order_date',
             'remarks'            => 'nullable|string|max:1000',
@@ -89,18 +80,16 @@ class PurchaseOrderController extends Controller
             'items.*.quantity'   => 'required|integer|min:1',
             'items.*.unit_cost'  => 'required|numeric|min:0',
         ], [
-            'items.required'           => 'Add at least one product to the purchase order.',
-            'supplier_id.exists'       => 'The selected supplier is archived or does not exist.',
-            'customer_order_id.exists' => 'The linked customer order is already completed or cancelled.',
+            'items.required'     => 'Add at least one product to the purchase order.',
+            'supplier_id.exists' => 'The selected supplier is archived or does not exist.',
         ]);
 
-        $lines = CustomerOrderController::combineLines($data['items'], 'unit_cost');
+        $lines = self::combineLines($data['items'], 'unit_cost');
 
         $po = DB::transaction(function () use ($data, $lines, $request) {
             $po = PurchaseOrder::create([
                 'po_no'             => PurchaseOrder::nextPoNo(),
                 'supplier_id'       => $data['supplier_id'],
-                'customer_order_id' => $data['customer_order_id'] ?? null,
                 'order_date'        => $data['order_date'],
                 'expected_date'     => $data['expected_date'] ?? null,
                 'remarks'           => $data['remarks'] ?? null,
@@ -118,12 +107,6 @@ class PurchaseOrderController extends Controller
                 ]);
             }
 
-            // The customer's order is now being sourced from the supplier
-            if ($po->customer_order_id) {
-                CustomerOrder::whereKey($po->customer_order_id)->where('status', 'pending')->first()
-                    ?->update(['status' => 'ordered']);
-            }
-
             return $po;
         });
 
@@ -133,7 +116,7 @@ class PurchaseOrderController extends Controller
 
     public function show(PurchaseOrder $purchaseOrder)
     {
-        $purchaseOrder->load('supplier', 'customerOrder.customer', 'items.product', 'invoices',
+        $purchaseOrder->load('supplier', 'items.product', 'invoices',
             'creator', 'approver', 'receiver', 'canceller');
 
         return view('purchase-orders.show', ['po' => $purchaseOrder]);
@@ -186,20 +169,11 @@ class PurchaseOrderController extends Controller
             throw ValidationException::withMessages(['status' => 'Received or cancelled purchase orders cannot be cancelled.']);
         }
 
-        DB::transaction(function () use ($purchaseOrder, $request) {
-            $purchaseOrder->update([
-                'status'       => 'cancelled',
-                'cancelled_by' => $request->user()->id,
-                'cancelled_at' => now(),
-            ]);
-
-            // If the linked customer order has no other active PO, it goes back to pending
-            $co = $purchaseOrder->customerOrder;
-            if ($co && $co->status === 'ordered'
-                && ! $co->purchaseOrders()->whereIn('status', ['draft', 'approved', 'sent', 'received'])->exists()) {
-                $co->update(['status' => 'pending']);
-            }
-        });
+        $purchaseOrder->update([
+            'status'       => 'cancelled',
+            'cancelled_by' => $request->user()->id,
+            'cancelled_at' => now(),
+        ]);
 
         return back()->with('success', "{$purchaseOrder->po_no} cancelled.");
     }
@@ -228,5 +202,18 @@ class PurchaseOrderController extends Controller
         if ($po->status !== $status) {
             throw ValidationException::withMessages(['status' => $message]);
         }
+    }
+
+    /** Merge duplicate rows of the same product: [product_id => ['quantity' => n, 'price' => x]]. */
+    private static function combineLines(array $items, string $priceKey): array
+    {
+        $lines = [];
+        foreach ($items as $item) {
+            $id = (int) $item['product_id'];
+            $lines[$id]['quantity'] = ($lines[$id]['quantity'] ?? 0) + (int) $item['quantity'];
+            $lines[$id]['price'] = (float) $item[$priceKey];
+        }
+
+        return $lines;
     }
 }

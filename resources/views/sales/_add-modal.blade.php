@@ -6,15 +6,9 @@
         'units' => $p->is_serialized ? $p->units->map(fn ($u) => ['id' => $u->id, 'serial' => $u->serial_no])->values() : [],
         'warranty' => $p->warrantyLabel(),
     ])->values();
-      $isThisForm = old('_form') === 'add-sale';
-    $fromOrder = $fromOrder ?? null;
-    // "Convert to Sale" from a customer order: start with that order's items
-    $orderItems = $fromOrder ? $fromOrder->items->map(fn ($i) => [
-        'product_id' => $i->product_id, 'quantity' => $i->quantity, 'unit_price' => (float) $i->unit_price,
-    ])->values()->all() : [];
-    $oldItems = $isThisForm ? array_values(old('items', [])) : $orderItems;
-    $linkedOrderId = $isThisForm ? old('customer_order_id') : $fromOrder?->id;
-    $startOpen = ($isThisForm && $errors->any()) || (! $isThisForm && $fromOrder);
+    $isThisForm = old('_form') === 'add-sale';
+    $oldItems = $isThisForm ? array_values(old('items', [])) : [];
+    $startOpen = $isThisForm && $errors->any();
 @endphp
 
 <div x-data="{ open: {{ $startOpen ? 'true' : 'false' }} }"
@@ -46,15 +40,6 @@
                   data-confirm-title="Save sale"
                   data-confirm-button="Yes, save sale">
                 @csrf
-                                @if ($linkedOrderId)
-                    <input type="hidden" name="customer_order_id" value="{{ $linkedOrderId }}">
-                    <div class="mb-5 flex items-start gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">
-                        <i class="ti ti-clipboard-list text-lg"></i>
-                        <p>This sale fulfills customer order
-                            <span class="font-semibold">{{ $fromOrder?->order_no ?? \App\Models\CustomerOrder::find($linkedOrderId)?->order_no }}</span>.
-                            Items were copied from the order; check the quantities and pick serial numbers before saving.</p>
-                    </div>
-                @endif
 
                 @if ($isThisForm && $errors->any())
                     <div class="mb-5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
@@ -69,15 +54,20 @@
                 {{-- Sale details --}}
                 <div class="border border-slate-200 rounded-xl p-4 sm:p-6 mb-5">
                     <h3 class="font-semibold text-[15px] mb-4">Sale Information</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
                         <div class="sm:col-span-2">
                             <label class="block text-sm font-medium mb-1.5">Customer</label>
                             <select name="customer_id" class="{{ $input }} truncate">
                                 <option value="">Select customer...</option>
                                 @foreach ($customers as $customer)
-                                   <option value="{{ $customer->id }}" @selected(old('customer_id', $fromOrder?->customer_id) == $customer->id)>{{ $customer->name }}</option>
+                                   <option value="{{ $customer->id }}" @selected(old('customer_id') == $customer->id)>{{ $customer->name }}</option>
                                 @endforeach
                             </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1.5">Customer PO No.</label>
+                                                        <input type="text" name="customer_po_no" value="{{ $isThisForm ? old('customer_po_no') : '' }}" maxlength="100" required autocomplete="off"
+                                   placeholder="From the customer's PO" class="{{ $input }}">
                         </div>
                         <div>
                             <label class="block text-sm font-medium mb-1.5">Sale Date</label>

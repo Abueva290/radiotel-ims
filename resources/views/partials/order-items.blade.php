@@ -1,5 +1,5 @@
 {{--
-    Item rows shared by the Customer Order and Purchase Order forms.
+     Item rows for the Purchase Order form.
     $rows: [['product_id' => 1, 'quantity' => 2, 'price' => 1500.00], ...]
 --}}
 @php

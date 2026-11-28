@@ -62,7 +62,6 @@
                 <th class="px-4 py-3 text-left">PO No.</th>
                 <th class="px-4 py-3 text-left">Date</th>
                 <th class="px-4 py-3 text-left">Supplier</th>
-                <th class="px-4 py-3 text-left">For Customer Order</th>
                 <th class="px-4 py-3 text-center">Items</th>
                 <th class="px-4 py-3 text-right">Amount</th>
                 <th class="px-4 py-3 text-left">Expected</th>
@@ -76,13 +75,6 @@
                     <td class="px-4 py-3 font-medium whitespace-nowrap"><a href="{{ route('purchase-orders.show', $po) }}" class="hover:underline">{{ $po->po_no }}</a></td>
                     <td class="px-4 py-3 text-slate-500 whitespace-nowrap">{{ $po->order_date->format('M d, Y') }}</td>
                     <td class="px-4 py-3">{{ $po->supplier->name }}</td>
-                    <td class="px-4 py-3 text-slate-500">
-                        @if ($po->customerOrder)
-                            {{ $po->customerOrder->order_no }}<span class="block text-xs text-slate-400">{{ $po->customerOrder->customer->name }}</span>
-                        @else
-                            <span class="text-slate-400">Stock replenishment</span>
-                        @endif
-                    </td>
                     <td class="px-4 py-3 text-center">{{ $po->items->sum('quantity') }}</td>
                     <td class="px-4 py-3 text-right font-medium">₱{{ number_format($po->total_amount, 2) }}</td>
                     <td class="px-4 py-3 text-slate-500 whitespace-nowrap">
@@ -100,7 +92,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="9" class="px-4 py-12 text-center text-slate-400">
+                    <td colspan="8" class="px-4 py-12 text-center text-slate-400">
                         <i class="ti ti-shopping-cart text-3xl block mb-2 text-slate-300"></i>
                         {{ $status || $keep ? 'No purchase orders match these filters.' : 'No purchase orders yet.' }}
                     </td>

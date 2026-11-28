@@ -93,12 +93,18 @@
                         <tr><td class="k">Date</td><td>{{ $sale->sale_date->format('F d, Y') }}</td></tr>
                         @if ($type === 'invoice')
                             <tr><td class="k">DR Reference</td><td>{{ $sale->dr_no }}</td></tr>
+                                                        @if ($sale->customer_po_no)
+                                <tr><td class="k">Customer PO No.</td><td>{{ $sale->customer_po_no }}</td></tr>
+                            @endif
                             @if ($sale->receivable)
                                 <tr><td class="k">Terms</td><td>{{ $termsDays > 0 ? $termsDays . ' days' : 'Due immediately' }}</td></tr>
                                 <tr><td class="k">Due Date</td><td>{{ $sale->receivable->due_date->format('F d, Y') }}</td></tr>
                             @endif
                         @else
                             <tr><td class="k">Invoice Reference</td><td>{{ $sale->invoice_no }}</td></tr>
+                                                        @if ($sale->customer_po_no)
+                                <tr><td class="k">Customer PO No.</td><td>{{ $sale->customer_po_no }}</td></tr>
+                            @endif
                         @endif
                         <tr><td class="k">Prepared by</td><td>{{ $sale->creator->name }}</td></tr>
                     </table>

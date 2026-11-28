@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class PurchaseOrder extends Model
 {
     protected $fillable = [
-        'po_no', 'supplier_id', 'customer_order_id', 'order_date', 'expected_date', 'status',
+        'po_no', 'supplier_id', 'order_date', 'expected_date', 'status',
         'total_amount', 'remarks', 'created_by', 'approved_by', 'approved_at', 'sent_at',
         'received_by', 'received_date', 'supplier_dr_no', 'cancelled_by', 'cancelled_at',
     ];
@@ -52,10 +52,7 @@ class PurchaseOrder extends Model
         return $this->belongsTo(Supplier::class);
     }
 
-    public function customerOrder()
-    {
-        return $this->belongsTo(CustomerOrder::class);
-    }
+    
 
     public function items()
     {

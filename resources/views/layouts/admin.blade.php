@@ -112,7 +112,6 @@
         ],
         'Operations' => [
             ['label' => 'Sales',            'icon' => 'receipt',          'route' => 'sales.index',       'roles' => ['admin', 'secretary']],
-            ['label' => 'Customer Orders',  'icon' => 'clipboard-list',   'route' => 'customer-orders.index', 'roles' => ['admin', 'secretary']],
             ['label' => 'Purchase Orders',  'icon' => 'shopping-cart',    'route' => 'purchase-orders.index', 'roles' => ['admin', 'secretary', 'staff']],
             ['label' => 'Customers',        'icon' => 'users',            'route' => 'customers.index',   'roles' => ['admin', 'secretary']],
             ['label' => 'Suppliers',        'icon' => 'truck',            'route' => 'suppliers.index',   'roles' => ['admin', 'secretary']],

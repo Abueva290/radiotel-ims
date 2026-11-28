@@ -4,7 +4,6 @@ use App\Http\Controllers\FactoryDefectController;
 use App\Http\Controllers\AuditTrailController;
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\CustomerController;
-use App\Http\Controllers\CustomerOrderController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PasswordChangeController;
 use App\Http\Controllers\PayableController;
@@ -55,12 +54,7 @@ Route::middleware('auth')->group(function () {
         Route::put('/customers/{customer}', [CustomerController::class, 'update'])->name('customers.update');
         Route::patch('/customers/{customer}/archive', [CustomerController::class, 'toggleArchive'])->name('customers.archive');
 
-        // Customer purchase orders (phone / walk-in orders before they become a sale)
-        Route::get('/customer-orders', [CustomerOrderController::class, 'index'])->name('customer-orders.index');
-        Route::get('/customer-orders/create', [CustomerOrderController::class, 'create'])->name('customer-orders.create');
-        Route::post('/customer-orders', [CustomerOrderController::class, 'store'])->name('customer-orders.store');
-        Route::get('/customer-orders/{customerOrder}', [CustomerOrderController::class, 'show'])->name('customer-orders.show');
-        Route::patch('/customer-orders/{customerOrder}/cancel', [CustomerOrderController::class, 'cancel'])->name('customer-orders.cancel');
+       
 
         // Supplier purchase orders: Secretary prepares and sends; approval is Admin only (see below)
         Route::get('/purchase-orders/create', [PurchaseOrderController::class, 'create'])->name('purchase-orders.create');

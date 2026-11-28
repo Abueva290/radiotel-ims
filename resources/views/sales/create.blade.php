@@ -19,7 +19,7 @@
 
         {{-- Sale details --}}
         <div class="bg-white rounded-xl border border-slate-200 p-5 mb-4">
-            <div class="grid grid-cols-4 gap-4">
+            <div class="grid grid-cols-5 gap-4">
                 <div class="col-span-2">
                     <label class="block text-sm font-medium mb-1">Customer</label>
                     <select name="customer_id" class="{{ $input }} truncate">
@@ -28,6 +28,11 @@
                             <option value="{{ $customer->id }}" @selected(old('customer_id') == $customer->id)>{{ $customer->name }}</option>
                         @endforeach
                     </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Customer PO No.</label>
+                                        <input type="text" name="customer_po_no" value="{{ old('customer_po_no') }}" maxlength="100" required autocomplete="off"
+                           placeholder="From the customer's PO" class="{{ $input }}">
                 </div>
                 <div>
                     <label class="block text-sm font-medium mb-1">Sale Date</label>

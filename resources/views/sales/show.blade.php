@@ -75,10 +75,7 @@
             <h2 class="font-semibold mb-3">Transaction</h2>
             <dl class="text-sm space-y-2">
                 <div class="flex justify-between"><dt class="text-slate-500">DR No.</dt><dd>{{ $sale->dr_no }}</dd></div>
-                                @if ($sale->customerOrder)
-                    <div class="flex justify-between"><dt class="text-slate-500">Customer order</dt>
-                        <dd><a href="{{ route('customer-orders.show', $sale->customerOrder) }}" class="underline hover:text-slate-900">{{ $sale->customerOrder->order_no }}</a></dd></div>
-                @endif
+                                             <div class="flex justify-between"><dt class="text-slate-500">Customer PO No.</dt><dd>{{ $sale->customer_po_no ?? '—' }}</dd></div>
                 <div class="flex justify-between">
                     <dt class="text-slate-500">Status</dt>
                     <dd><x-badge type="payment" :value="Badge::paymentStatus($sale->status, $sale->receivable?->due_date)" /></dd>

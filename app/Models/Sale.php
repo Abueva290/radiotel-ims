@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Sale extends Model
 {
     protected $fillable = [
-        'customer_id', 'created_by', 'invoice_no', 'dr_no',
+        'customer_id', 'created_by', 'invoice_no', 'dr_no', 'customer_po_no',
         'sale_date', 'total_amount', 'status',
     ];
 
@@ -48,11 +48,7 @@ class Sale extends Model
         return $this->hasMany(SaleItem::class);
     }
 
-    /** The customer purchase order this sale fulfilled, if any. */
-    public function customerOrder()
-    {
-        return $this->hasOne(CustomerOrder::class);
-    }
+    
 
     public function receivable()
     {

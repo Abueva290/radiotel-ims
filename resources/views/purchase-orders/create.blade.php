@@ -5,11 +5,7 @@
 @section('content')
 @php
     $input = 'w-full rounded-lg border-slate-300 text-sm py-2 px-3 focus:border-slate-500 focus:ring-slate-500';
-    // From a customer order: copy its items at each product's unit cost
-    $rows = $customerOrder ? $customerOrder->items->map(fn ($i) => [
-        'product_id' => $i->product_id, 'quantity' => $i->quantity, 'price' => (float) $i->product->unit_cost,
-    ])->values()->all() : [];
-    $linked = old('customer_order_id', $customerOrder?->id);
+    $rows = [];
 @endphp
 
 <div class="max-w-5xl">
@@ -17,13 +13,6 @@
         <h1 class="text-xl font-semibold">New Purchase Order</h1>
         <p class="text-sm text-slate-500">Order items from a supplier. The Operational Manager approves it before it is sent. PO No. <span class="font-medium text-slate-700">{{ $poNo }}</span></p>
     </div>
-
-    @if ($customerOrder)
-        <div class="mb-4 flex items-start gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">
-            <i class="ti ti-clipboard-list text-lg"></i>
-            <p>Items copied from customer order <span class="font-semibold">{{ $customerOrder->order_no }}</span> ({{ $customerOrder->customer->name }}). Adjust quantities if some are already in stock.</p>
-        </div>
-    @endif
 
     <form method="POST" action="{{ route('purchase-orders.store') }}" class="space-y-4"
           data-confirm="Submit this purchase order for the Operational Manager's approval?"
@@ -41,15 +30,6 @@
                             <option value="{{ $supplier->id }}" @selected(old('supplier_id') == $supplier->id)>
                                 {{ $supplier->name }} · {{ $supplier->credit_terms_days ? $supplier->credit_terms_days . '-day credit' : 'cash' }}
                             </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="sm:col-span-2">
-                    <label class="block text-sm font-medium mb-1">For Customer Order <span class="font-normal text-slate-400">(optional)</span></label>
-                    <select name="customer_order_id" class="{{ $input }}">
-                        <option value="">None – stock replenishment</option>
-                        @foreach ($openOrders as $co)
-                            <option value="{{ $co->id }}" @selected($linked == $co->id)>{{ $co->order_no }} · {{ $co->customer->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -74,7 +54,7 @@
         ])
 
         <div class="flex justify-end gap-3">
-            <a href="{{ $customerOrder ? route('customer-orders.show', $customerOrder) : route('purchase-orders.index') }}" class="px-5 py-2 rounded-lg bg-slate-100 text-sm hover:bg-slate-200">Cancel</a>
+            <a href="{{ route('purchase-orders.index') }}" class="px-5 py-2 rounded-lg bg-slate-100 text-sm hover:bg-slate-200">Cancel</a>
             <button class="px-5 py-2 rounded-lg bg-slate-700 text-white text-sm hover:bg-slate-800">Submit for Approval</button>
         </div>
     </form>

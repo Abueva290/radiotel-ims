@@ -38,7 +38,6 @@ class AppServiceProvider extends ServiceProvider
         \App\Models\RepairJobUnit::class,
         \App\Models\ProductUnit::class,
         \App\Models\FactoryDefect::class,
-        \App\Models\CustomerOrder::class,
         \App\Models\PurchaseOrder::class,
         Customer::class,
         Supplier::class,

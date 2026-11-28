@@ -93,13 +93,7 @@ class Badge
             'wear_and_tear' => ['Normal Wear & Tear', 'amber'],
             'other' => ['Other Issue', 'gray'],
         ],
-                // Purchase order the customer placed with Radiotel
-        'customer_order' => [
-            'pending' => ['Pending', 'amber'],
-            'ordered' => ['Ordered from Supplier', 'blue'],
-            'completed' => ['Completed (Sold)', 'green'],
-            'cancelled' => ['Cancelled', 'gray'],
-        ],
+       
         // Purchase order Radiotel sends to a supplier
         'purchase_order' => [
             'draft' => ['For Approval', 'amber'],

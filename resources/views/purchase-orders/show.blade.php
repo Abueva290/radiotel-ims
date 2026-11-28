@@ -110,21 +110,6 @@
                 <div class="flex justify-between gap-4"><dt class="text-slate-500">Credit terms</dt><dd>{{ $po->supplier->credit_terms_days ? $po->supplier->credit_terms_days . ' days' : 'Cash' }}</dd></div>
                 <div class="flex justify-between gap-4"><dt class="text-slate-500">Expected delivery</dt><dd>{{ $po->expected_date?->format('M d, Y') ?? '—' }}</dd></div>
                 <div class="flex justify-between gap-4"><dt class="text-slate-500">Prepared by</dt><dd>{{ $po->creator->name }}</dd></div>
-                <div class="flex justify-between gap-4">
-                    <dt class="text-slate-500">For customer order</dt>
-                    <dd>
-                        @if ($po->customerOrder)
-                            @if ($isOffice)
-                                <a href="{{ route('customer-orders.show', $po->customerOrder) }}" class="underline">{{ $po->customerOrder->order_no }}</a>
-                            @else
-                                {{ $po->customerOrder->order_no }}
-                            @endif
-                            <span class="block text-xs text-slate-400 text-right">{{ $po->customerOrder->customer->name }}</span>
-                        @else
-                            Stock replenishment
-                        @endif
-                    </dd>
-                </div>
                 @if ($po->remarks)
                     <div><dt class="text-slate-500">Remarks</dt><dd class="mt-1">{{ $po->remarks }}</dd></div>
                 @endif
